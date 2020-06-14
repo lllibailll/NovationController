@@ -25,8 +25,6 @@ namespace Lib.Manager
 
         private LaunchpadProfile _activeProfile;
 
-        private DiscordInt _discordInt;
-
         private List<BaseIntegration> _integrations = new List<BaseIntegration>();
         
         private MediaIntegration _mediaIntegration;
@@ -35,6 +33,7 @@ namespace Lib.Manager
         private SteamIntegration _steamIntegration;
         private PhilipsHueIntegration _philipsHueIntegration;
         private MagicHomeIntegration _magicHomeIntegration;
+        private DiscordIntegration _discordIntegration;
 
         public LaunchpadMk2 Launchpad { get; }
         
@@ -44,6 +43,7 @@ namespace Lib.Manager
             _applicationIntegration = new ApplicationIntegration(this, "Application", "Proc");
             _webIntegration = new WebIntegration(this, "Web", "Web");
             _steamIntegration = new SteamIntegration(this, "Steam", "Steam");
+            _discordIntegration = new DiscordIntegration(this, "Discord", "Discord");
             
             _philipsHueIntegration = new PhilipsHueIntegration(this, "PhilipsHue", "PhilipsHue");
             _magicHomeIntegration = new MagicHomeIntegration(this, "MagicHome", "MagicHome");

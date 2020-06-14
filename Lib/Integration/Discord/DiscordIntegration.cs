@@ -1,49 +1,111 @@
-﻿﻿using System;
-using System.Threading;
-using CreateFlags = Lib.Integration.Discord.SDK.CreateFlags;
-using LogLevel = Lib.Integration.Discord.SDK.LogLevel;
-using OAuth2Token = Lib.Integration.Discord.SDK.OAuth2Token;
-using Result = Lib.Integration.Discord.SDK.Result;
+﻿using System;
+using Lib.Click;
+using Lib.DiscordIPC;
+using Lib.Manager;
+using Newtonsoft.Json;
 
 namespace Lib.Integration.Discord
 {
-    public class DiscordInt
+    public class DiscordIntegration : BaseIntegration
     {
-        private Discord.SDK.Discord _discord;
+        private DiscordConfig _config;
+        private DiscordAuthConfig _authConfig;
 
-        private const long DiscordClientId = 721396708088479825;
+        private IpcClient _ipcClient;
 
-        private Thread _thread;
+        private DiscordVoiceStatus _discordVoiceStatus = new DiscordVoiceStatus();
 
-        private bool _isRunning = false;
-
-        public void Init()
+        public DiscordIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
         {
-            Console.WriteLine($"Initializing Discord Integration for {DiscordClientId}");
-            _isRunning = true;
-            _discord = new Discord.SDK.Discord(DiscordClientId, (ulong) CreateFlags.Default);
-            
-            RequestAuth();
-            
-            var thread = new Thread(() =>
-            {
-                while (_isRunning)
-                {
-                    _discord.RunCallbacks();
-                    Thread.Sleep(1000 / 60);
-                }
-            });
-            
-            thread.Start();
         }
 
-        public Discord.SDK.Discord Discord => _discord;
-
-        public void RequestAuth()
+        public override void OnLoad()
         {
-            _discord.GetApplicationManager().GetOAuth2Token((Result result, ref OAuth2Token token) =>
+            _ipcClient = new IpcClient(_config.ApplicationId);
+
+            ListenDiscordEvents();
+
+            _ipcClient.Init(_config, _authConfig);
+        }
+
+        private void ListenDiscordEvents()
+        {
+            _ipcClient.OnAuthorize += (sender, args) =>
             {
-                Console.WriteLine($"res={result} token={token}");
+                _authConfig = args.DiscordAuthConfig;
+                
+                WriteToFile(JsonConvert.SerializeObject(_authConfig), "auth_details.json");
+            };
+
+            _ipcClient.OnError += (sender, args) =>
+            {
+                Console.WriteLine($"ERROR {args.Message}");
+            };
+
+            _ipcClient.OnReady += (sender, args) =>
+            {
+                _ipcClient.Subscribe("VOICE_SETTINGS_UPDATE");
+            };
+            
+            _ipcClient.OnVoiceSettingsUpdate += (sender, args) =>
+            {
+                _discordVoiceStatus.Mute = args.Mute;
+                _discordVoiceStatus.Deaf = args.Deaf;
+            };
+        }
+
+        protected override void LoadConfig()
+        {
+            var configRaw = GetRawConfig() ?? CreateConfig(new DiscordConfig());
+            _config = JsonConvert.DeserializeObject<DiscordConfig>(configRaw);
+
+            var authDetails = GetRawConfig("auth_details.json");
+
+            if (authDetails != null)
+            {
+                _authConfig = JsonConvert.DeserializeObject<DiscordAuthConfig>(authDetails);
+            }
+        }
+
+        private void ToggleVoiceMute()
+        {
+            _ipcClient.ToggleMuteStatus(!_discordVoiceStatus.Mute);
+        }
+        
+        private void ToggleVoiceDeaf()
+        {
+            _ipcClient.ToggleDeafStatus(!_discordVoiceStatus.Deaf);
+        }
+
+        protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
+        {
+        }
+
+        protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
+        {
+            clickableButton.ClickCallbacks.Add(() =>
+            {
+                switch (data[1])
+                {
+                    case "Toggle":
+                    {
+                        switch (data[2])
+                        {
+                            case "Mute":
+                            {
+                                ToggleVoiceMute();
+                                break;
+                            }
+                            
+                            case "Deaf":
+                            {
+                                ToggleVoiceDeaf();
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
             });
         }
     }

@@ -7,7 +7,6 @@ namespace ConsoleApp
         static void Main(string[] args)
         {
             new NovationConsoleController();
-            //new TestRPC();
         }
     }
 }

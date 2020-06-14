@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Lib.Click;
@@ -14,7 +15,6 @@ namespace Lib.Integration
         private string _actionPrefix;
 
         private string IntegrationPath;
-        private string ConfigPath;
 
         public BaseIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix)
         {
@@ -25,7 +25,6 @@ namespace Lib.Integration
             
             Console.WriteLine("Loading config...");
             IntegrationPath = $"Config/Integration/{_name}";
-            ConfigPath = $"{IntegrationPath}/config.json";
             LoadConfig();
             
             OnLoad();
@@ -55,17 +54,7 @@ namespace Lib.Integration
 
         protected string GetRawConfig()
         {
-            if (!Directory.Exists(IntegrationPath))
-            {
-                Directory.CreateDirectory($"Config/Integration/{_name}");
-            }
-
-            if (File.Exists(ConfigPath))
-            {
-                return File.ReadAllText(ConfigPath);
-            }
-
-            return null;
+            return GetRawConfig("config.json");
         }
 
         protected string CreateConfig<T>(T config)
@@ -82,6 +71,29 @@ namespace Lib.Integration
             file.Close();
 
             return raw;
+        }
+
+        protected string GetRawConfig(string name)
+        {
+            if (!Directory.Exists(IntegrationPath))
+            {
+                Directory.CreateDirectory($"Config/Integration/{_name}");
+            }
+
+            var path = $"{IntegrationPath}/{name}";
+            
+            return File.Exists(path) ? File.ReadAllText(path) : null;
+        }
+
+        protected void WriteToFile(string content, string fileName)
+        {
+            var fileDir = $"{IntegrationPath}/{fileName}";
+            var file = File.Open(fileDir, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            var writer = new StreamWriter(file);
+            writer.Write(content);
+            
+            writer.Close();
+            file.Close();
         }
 
         public virtual void OnLoad()

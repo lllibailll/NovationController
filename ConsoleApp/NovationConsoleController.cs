@@ -195,7 +195,7 @@ namespace ConsoleApp
             var profileLights = new LaunchpadProfile
             {
                 Id = 2,
-                Name = "Hue profile",
+                Name = "Lights profile",
                 LaunchpadCoord = new LaunchpadCoord(8, 0)
             };
             
@@ -220,6 +220,18 @@ namespace ConsoleApp
                 ClickCallback = () =>
                 {
                     _launchpadManager.PhilipsHueIntegration.Toggle(1, true);
+                }
+            });
+            
+            profileLights.AddButton(new ClickableButton
+            {
+                Name = "Mesa",
+                X = 7,
+                Y = 7,
+                Color = Color.Yellow,
+                ClickCallback = () =>
+                {
+                    _launchpadManager.MagicHomeIntegration.Toggle(_launchpadManager.MagicHomeIntegration.GetByName("Mesa"));
                 }
             });
             

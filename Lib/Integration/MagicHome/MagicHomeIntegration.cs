@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using Lib.Click;
 using Lib.Integration.MagicHome.Model;
 using Lib.Integration.MagicHome.Model.Request;
@@ -15,7 +12,7 @@ using RestSharp;
 
 namespace Lib.Integration.MagicHome
 {
-    public class MagicHomeIntegration
+    public class MagicHomeIntegration : BaseIntegration
     {
         private const string UserAgent = "Magic Home/1.5.1(ANDROID,10,en-US)";
 
@@ -25,8 +22,6 @@ namespace Lib.Integration.MagicHome
         private const string ToggleOn = "71230fa3";
         private const string ToggleOff = "71240fa4";
 
-        private LaunchpadManager _launchpadManager;
-        
         private string _baseUrl;
         private string _token;
 
@@ -34,9 +29,9 @@ namespace Lib.Integration.MagicHome
 
         private List<MagicHomeDevice> _devices = new List<MagicHomeDevice>();
 
-        public MagicHomeIntegration(LaunchpadManager launchpadManager, string baseUrl, string token)
+        public MagicHomeIntegration(LaunchpadManager launchpadManager, string actionPrefix, string baseUrl, string token) : 
+            base(launchpadManager, actionPrefix)
         {
-            _launchpadManager = launchpadManager;
             _baseUrl = baseUrl;
             _token = token;
             _restClient = new RestClient(_baseUrl);
@@ -82,7 +77,7 @@ namespace Lib.Integration.MagicHome
                 });
         }
 
-        public void Toggle(ClickableButton clickableButton, MagicHomeDevice magicHomeDevice)
+        private void Toggle(ClickableButton clickableButton, MagicHomeDevice magicHomeDevice)
         {
 
             var toggleRequest = new StatusToggleRequest
@@ -110,7 +105,7 @@ namespace Lib.Integration.MagicHome
             Console.WriteLine($"[MagicHome] Toggle res: {res}");
         }
 
-        public void CheckButtonColor(ClickableButton clickableButton, MagicHomeDevice magicHomeDevice)
+        private void CheckButtonColor(ClickableButton clickableButton, MagicHomeDevice magicHomeDevice)
         {
             if (magicHomeDevice.On)
             {
@@ -135,5 +130,21 @@ namespace Lib.Integration.MagicHome
         public string DeviceListEndpoint => $"{_baseUrl}/app/getMyBindDevicesAndState/ZG001";
         public string DeviceToggleEndpoint => $"{_baseUrl}/app/sendCommandBatch/ZG001";
         public string DeviceStatusEndpoint => $"{_baseUrl}/app/sendRequestCommand/ZG001";
+        
+        protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
+        {
+            clickableButton.ClickCallback = () =>
+            {
+                Toggle(clickableButton, GetByMac(data[1]));
+            };
+        }
+        
+        protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
+        {
+            clickableButton.LoadCallback = () =>
+            {
+                CheckButtonColor(clickableButton, GetByMac(data[1]));
+            };
+        }
     }
 }

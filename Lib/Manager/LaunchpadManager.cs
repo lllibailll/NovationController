@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -8,51 +7,66 @@ using Core.Launchpad.Button;
 using Core.Launchpad.Impl.Mk2;
 using Lib.Click;
 using Lib.Config;
+using Lib.Integration;
+using Lib.Integration.Application;
 using Lib.Integration.Discord;
 using Lib.Integration.MagicHome;
 using Lib.Integration.Media;
 using Lib.Integration.PhilipsHue;
+using Lib.Integration.Steam;
 using Newtonsoft.Json;
 
 namespace Lib.Manager
 {
-public class LaunchpadManager
+    public class LaunchpadManager
     {
+        public const string ProfileSplitter = ";|;";
+        
         private List<LaunchpadProfile> _profiles = new List<LaunchpadProfile>();
 
         private LaunchpadProfile _activeProfile;
-
-        private LaunchpadMk2 _launchpad;
 
         private DiscordInt _discordInt;
 
         private IntegrationConfig _integrationConfig;
 
+        private List<BaseIntegration> _integrations = new List<BaseIntegration>();
+        
+        private MediaIntegration _mediaIntegration;
+        private ApplicationIntegration _applicationIntegration;
+        private WebIntegration _webIntegration;
+        private SteamIntegration _steamIntegration;
         private PhilipsHueIntegration _philipsHueIntegration;
         private MagicHomeIntegration _magicHomeIntegration;
 
+        public LaunchpadMk2 Launchpad { get; }
+        
         public LaunchpadManager()
         {
             LoadConfig();
-            
-            _philipsHueIntegration = new PhilipsHueIntegration(this, _integrationConfig.PhilipsUrl, _integrationConfig.PhilipsToken);
-            _magicHomeIntegration = new MagicHomeIntegration(this, _integrationConfig.MagicHomeUrl, _integrationConfig.MagicHomeToken);
 
-            _launchpad = LaunchpadMk2.GetInstance().Result;
+            _mediaIntegration = new MediaIntegration(this, "Media");
+            _applicationIntegration = new ApplicationIntegration(this, "Proc");
+            _webIntegration = new WebIntegration(this, "Web");
+            _steamIntegration = new SteamIntegration(this, "Steam");
             
-            _launchpad.Clear();
+            _philipsHueIntegration = new PhilipsHueIntegration(this, "PhilipsHue", _integrationConfig.PhilipsUrl, _integrationConfig.PhilipsToken);
+            _magicHomeIntegration = new MagicHomeIntegration(this, "MagicHome", _integrationConfig.MagicHomeUrl, _integrationConfig.MagicHomeToken);
 
-            _launchpad.OnButtonStateChanged += button =>
+            Launchpad = LaunchpadMk2.GetInstance().Result;
+
+            Launchpad.Clear();
+
+            Launchpad.OnButtonStateChanged += button =>
             {
                 if (_activeProfile == null) return;
 
                 if (button.State == LaunchpadButtonState.Pressed)
                 {
-                    
                     if (button.X == 8)
                     {
                         // Profile changing buttons
-                        var profileCandidate = _profiles.FirstOrDefault(x => x.LaunchpadCoord.Y == button.Y);
+                        var profileCandidate = _profiles.FirstOrDefault(x => x.CoordY == button.Y);
 
                         if (profileCandidate != null)
                         {
@@ -68,6 +82,8 @@ public class LaunchpadManager
                     }
                 }
             };
+
+            LoadProfiles();
         }
 
         private void LoadConfig()
@@ -83,35 +99,47 @@ public class LaunchpadManager
                 Console.WriteLine("Integrations config does not exists, creating one...");
                 _integrationConfig = new IntegrationConfig();
                 var file = File.Create(configFileName);
-                
+
                 var writerStream = new StreamWriter(file);
                 writerStream.Write(JsonConvert.SerializeObject(_integrationConfig));
-                
+
                 writerStream.Close();
                 file.Close();
             }
         }
 
-        public LaunchpadMk2 Launchpad => _launchpad;
+        private void LoadProfiles()
+        {
+            var json = File.ReadAllText("profiles.json");
+
+            var profiles = JsonConvert.DeserializeObject<List<LaunchpadProfile>>(json);
+
+            profiles.ForEach(p =>
+            {
+                p.Buttons.ForEach(RegisterButtonActions);
+
+                AddProfile(p);
+            });
+        }
 
         public void Shutdown()
         {
-            _launchpad.Clear();
+            Launchpad.Clear();
         }
 
         public void SetButtonColor(ClickableButton clickableButton, Color color)
         {
-            _launchpad.SetGridButtonColor(clickableButton.X, clickableButton.Y, color);
+            Launchpad.SetGridButtonColor(clickableButton.X, clickableButton.Y, color);
         }
 
-        public void AddProfile(LaunchpadProfile launchpadProfile)
+        private void AddProfile(LaunchpadProfile launchpadProfile)
         {
-            if (GetByCoords(launchpadProfile.LaunchpadCoord.X, launchpadProfile.LaunchpadCoord.Y) != null)
+            if (GetByCoords(launchpadProfile.CoordX, launchpadProfile.CoordY) != null)
             {
                 Console.WriteLine("A profile already is in that coords.");
                 return;
             }
-            
+
             _profiles.Add(launchpadProfile);
 
             if (_activeProfile == null)
@@ -120,35 +148,43 @@ public class LaunchpadManager
             }
         }
 
-        public LaunchpadProfile GetByCoords(int coordX, int coordY)
+        private void RegisterButtonActions(ClickableButton clickableButton)
         {
-            return _profiles.FirstOrDefault(x => x.LaunchpadCoord.X == coordX && x.LaunchpadCoord.Y == coordY);
+            _integrations.ForEach(x =>
+            {
+                if (!string.IsNullOrEmpty(clickableButton.LoadRaw))
+                {
+                    x.CheckLoadAction(clickableButton);
+                }
+                
+                if (!string.IsNullOrEmpty(clickableButton.ClickRaw))
+                {
+                    x.CheckClickAction(clickableButton);
+                }
+            });
         }
 
-        public void SetProfileActive(LaunchpadProfile launchpadProfile)
+        private LaunchpadProfile GetByCoords(int coordX, int coordY)
         {
-            _launchpad.Clear();
+            return _profiles.FirstOrDefault(x => x.CoordX == coordX && x.CoordY == coordY);
+        }
+
+        private void SetProfileActive(LaunchpadProfile launchpadProfile)
+        {
+            Launchpad.Clear();
             launchpadProfile.Buttons.ForEach(x =>
             {
-                _launchpad.SetGridButtonColor(x.X, x.Y, x.Color);
+                Launchpad.SetGridButtonColor(x.X, x.Y, x.Color);
 
                 x.LoadCallback?.Invoke();
             });
-            var profileButton = launchpadProfile.LaunchpadCoord;
-            _launchpad.SetGridButtonColor(profileButton.X, profileButton.Y, Color.Aqua);
+            Launchpad.SetGridButtonColor(launchpadProfile.CoordX, launchpadProfile.CoordY, Color.Aqua);
             _activeProfile = launchpadProfile;
         }
 
-        public void InitDiscord()
+        public void RegisterIntegration(BaseIntegration integration)
         {
-            _discordInt = new DiscordInt();
-            _discordInt.Init();
+            _integrations.Add(integration);
         }
-
-        public DiscordInt DiscordInt => _discordInt;
-
-        public PhilipsHueIntegration PhilipsHueIntegration => _philipsHueIntegration;
-
-        public MagicHomeIntegration MagicHomeIntegration => _magicHomeIntegration;
     }
 }

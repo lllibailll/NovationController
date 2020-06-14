@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using Lib.Click;
-using Lib.Integration.MagicHome.Model;
 using Lib.Integration.PhilipsHue.Model;
 using Lib.Integration.PhilipsHue.Model.Interact;
 using Lib.Manager;
@@ -12,9 +11,8 @@ using Newtonsoft.Json;
 
 namespace Lib.Integration.PhilipsHue
 {
-    public class PhilipsHueIntegration
+    public class PhilipsHueIntegration : BaseIntegration
     {
-        private LaunchpadManager _launchpadManager;
         private string _baseUrl;
         private string _token;
 
@@ -22,9 +20,9 @@ namespace Lib.Integration.PhilipsHue
         
         private Dictionary<int, SmartItem> _items = new Dictionary<int, SmartItem>();
 
-        public PhilipsHueIntegration(LaunchpadManager launchpadManager, string baseUrl, string token)
+        public PhilipsHueIntegration(LaunchpadManager launchpadManager, string actionPrefix, string baseUrl, string token) : 
+            base(launchpadManager, actionPrefix)
         {
-            _launchpadManager = launchpadManager;
             _baseUrl = baseUrl;
             _token = token;
             _webClient = new WebClient();
@@ -32,7 +30,7 @@ namespace Lib.Integration.PhilipsHue
             LoadItems();
         }
 
-        public void Toggle(ClickableButton clickableButton, int id)
+        private void Toggle(ClickableButton clickableButton, int id)
         {
             var item = GetById(id);
 
@@ -52,8 +50,8 @@ namespace Lib.Integration.PhilipsHue
             
             Console.WriteLine($"[Philips] Toggle {id}: {res}");
         }
-        
-        public void CheckButtonColor(ClickableButton clickableButton, SmartItem smartItem)
+
+        private void CheckButtonColor(ClickableButton clickableButton, SmartItem smartItem)
         {
             if (smartItem.State.On)
             {
@@ -65,12 +63,12 @@ namespace Lib.Integration.PhilipsHue
             }
         }
 
-        public SmartItem GetById(int id)
+        private SmartItem GetById(int id)
         {
             return !_items.Keys.Contains(id) ? null : _items[id];
         }
 
-        public void LoadItems()
+        private void LoadItems()
         {
             Console.WriteLine($"[Philips] Loading items...");
             
@@ -83,7 +81,23 @@ namespace Lib.Integration.PhilipsHue
             });
         }
 
-        public string BaseEndpoint => $"{_baseUrl}/{_token}";
-        public string LightsEndpoint => $"{BaseEndpoint}/lights";
+        private string BaseEndpoint => $"{_baseUrl}/{_token}";
+        private string LightsEndpoint => $"{BaseEndpoint}/lights";
+        
+        protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
+        {
+            clickableButton.ClickCallback = () =>
+            {
+                Toggle(clickableButton, int.Parse(data[1]));
+            };
+        }
+        
+        protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
+        {
+            clickableButton.LoadCallback = () =>
+            {
+                CheckButtonColor(clickableButton, GetById(int.Parse(data[1])));
+            };
+        }
     }
 }

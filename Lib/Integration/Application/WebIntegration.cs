@@ -4,31 +4,31 @@ using Lib.Manager;
 
 namespace Lib.Integration.Application
 {
-    public class ApplicationIntegration : BaseIntegration
+    public class WebIntegration : BaseIntegration
     {
-        public ApplicationIntegration(LaunchpadManager launchpadManager, string actionPrefix) : base(launchpadManager, actionPrefix)
+        public WebIntegration(LaunchpadManager launchpadManager, string actionPrefix) : base(launchpadManager, actionPrefix)
         {
             
         }
-        
-        private static void StartApp(string path)
+
+        private static void OpenWeb(string path)
         {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = path,
-                UseShellExecute = true
+            var ps = new ProcessStartInfo(path)
+            { 
+                UseShellExecute = true, 
+                Verb = "open" 
             };
-            Process.Start(startInfo);
+            Process.Start(ps);
         }
 
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
         {
             clickableButton.ClickCallback = () =>
             {
-                StartApp(data[1]);
+                OpenWeb(data[1]);
             };
         }
-
+        
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
         {
             

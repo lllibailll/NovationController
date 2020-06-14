@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using Lib.Click;
 using Lib.Integration.MagicHome.Model;
 using Lib.Integration.MagicHome.Model.Request;
 using Lib.Integration.MagicHome.Model.Response;
+using Lib.Manager;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -22,6 +25,8 @@ namespace Lib.Integration.MagicHome
         private const string ToggleOn = "71230fa3";
         private const string ToggleOff = "71240fa4";
 
+        private LaunchpadManager _launchpadManager;
+        
         private string _baseUrl;
         private string _token;
 
@@ -29,8 +34,9 @@ namespace Lib.Integration.MagicHome
 
         private List<MagicHomeDevice> _devices = new List<MagicHomeDevice>();
 
-        public MagicHomeIntegration(string baseUrl, string token)
+        public MagicHomeIntegration(LaunchpadManager launchpadManager, string baseUrl, string token)
         {
+            _launchpadManager = launchpadManager;
             _baseUrl = baseUrl;
             _token = token;
             _restClient = new RestClient(_baseUrl);
@@ -76,7 +82,7 @@ namespace Lib.Integration.MagicHome
                 });
         }
 
-        public void Toggle(MagicHomeDevice magicHomeDevice)
+        public void Toggle(ClickableButton clickableButton, MagicHomeDevice magicHomeDevice)
         {
 
             var toggleRequest = new StatusToggleRequest
@@ -98,8 +104,22 @@ namespace Lib.Integration.MagicHome
             var res = _restClient.Post(req).Content;
 
             magicHomeDevice.On = !magicHomeDevice.On;
+
+            CheckButtonColor(clickableButton, magicHomeDevice);
             
             Console.WriteLine($"[MagicHome] Toggle res: {res}");
+        }
+
+        public void CheckButtonColor(ClickableButton clickableButton, MagicHomeDevice magicHomeDevice)
+        {
+            if (magicHomeDevice.On)
+            {
+                _launchpadManager.SetButtonColor(clickableButton, Color.Green);
+            }
+            else
+            {
+                _launchpadManager.SetButtonColor(clickableButton, Color.Red);
+            }
         }
 
         public MagicHomeDevice GetByMac(string mac)

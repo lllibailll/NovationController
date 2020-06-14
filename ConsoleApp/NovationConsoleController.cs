@@ -65,6 +65,13 @@ namespace ConsoleApp
         
         private void LoadProfiles()
         {
+            LoadDefaultProfile();
+
+            LoadLightsProfile();
+        }
+
+        private void LoadDefaultProfile()
+        {
             var profile = new LaunchpadProfile
             {
                 Name = "Default profile",
@@ -172,70 +179,76 @@ namespace ConsoleApp
             });
             
             _launchpadManager.AddProfile(profile);
+        }
 
-            var profileTest = new LaunchpadProfile
-            {
-                Id = 1,
-                Name = "Test profile",
-                LaunchpadCoord = new LaunchpadCoord(8, 6)
-            };
-            
-            profileTest.AddButton(new ClickableButton
-            {
-                Name = "YouTube 2",
-                X = 0,
-                Y = 7,
-                Color = Color.Red,
-                ClickCallback = () =>
-                {
-                    ApplicationIntegration.OpenWeb("https://youtube.com/lllibailll");
-                }
-            });
-            
+        private void LoadLightsProfile()
+        {
             var profileLights = new LaunchpadProfile
             {
                 Id = 2,
                 Name = "Lights profile",
                 LaunchpadCoord = new LaunchpadCoord(8, 0)
             };
-            
-            profileLights.AddButton(new ClickableButton
+
+            var mesilla2Button = new ClickableButton
             {
                 Name = "Mesilla 2",
                 X = 2,
                 Y = 0,
                 Color = Color.Yellow,
-                ClickCallback = () =>
-                {
-                    _launchpadManager.PhilipsHueIntegration.Toggle(2, true);
-                }
-            });
+            };
+
+            mesilla2Button.ClickCallback = () =>
+            {
+                _launchpadManager.PhilipsHueIntegration.Toggle(mesilla2Button, 2);
+            };
             
-            profileLights.AddButton(new ClickableButton
+            mesilla2Button.LoadCallback = () =>
+            {
+                _launchpadManager.PhilipsHueIntegration.CheckButtonColor(mesilla2Button, _launchpadManager.PhilipsHueIntegration.GetById(2));
+            };
+
+            var mesilla1Button = new ClickableButton
             {
                 Name = "Mesilla 1",
                 X = 5,
                 Y = 0,
-                Color = Color.Yellow,
-                ClickCallback = () =>
-                {
-                    _launchpadManager.PhilipsHueIntegration.Toggle(1, true);
-                }
-            });
-            
-            profileLights.AddButton(new ClickableButton
+                Color = Color.Yellow
+            };
+
+            mesilla1Button.ClickCallback = () =>
+            {
+                _launchpadManager.PhilipsHueIntegration.Toggle(mesilla1Button, 1);
+            };
+
+            mesilla1Button.LoadCallback = () =>
+            {
+                _launchpadManager.PhilipsHueIntegration.CheckButtonColor(mesilla1Button, _launchpadManager.PhilipsHueIntegration.GetById(1));
+            };
+
+            profileLights.AddButton(mesilla2Button);
+            profileLights.AddButton(mesilla1Button);
+
+            var mesaButton = new ClickableButton
             {
                 Name = "Mesa",
                 X = 7,
                 Y = 7,
-                Color = Color.Yellow,
-                ClickCallback = () =>
-                {
-                    _launchpadManager.MagicHomeIntegration.Toggle(_launchpadManager.MagicHomeIntegration.GetByName("Mesa"));
-                }
-            });
+                Color = Color.Yellow
+            };
+
+            mesaButton.ClickCallback = () =>
+            {
+                _launchpadManager.MagicHomeIntegration.Toggle(mesaButton, _launchpadManager.MagicHomeIntegration.GetByName("Mesa"));
+            };
             
-            _launchpadManager.AddProfile(profileTest);
+            mesaButton.LoadCallback = () =>
+            {
+                _launchpadManager.MagicHomeIntegration.CheckButtonColor(mesaButton, _launchpadManager.MagicHomeIntegration.GetByName("Mesa"));
+            };
+            
+            profileLights.AddButton(mesaButton);
+            
             _launchpadManager.AddProfile(profileLights);
         }
 

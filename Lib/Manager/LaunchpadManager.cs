@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -35,8 +35,8 @@ public class LaunchpadManager
         {
             LoadConfig();
             
-            _philipsHueIntegration = new PhilipsHueIntegration(_integrationConfig.PhilipsUrl, _integrationConfig.PhilipsToken);
-            _magicHomeIntegration = new MagicHomeIntegration(_integrationConfig.MagicHomeUrl, _integrationConfig.MagicHomeToken);
+            _philipsHueIntegration = new PhilipsHueIntegration(this, _integrationConfig.PhilipsUrl, _integrationConfig.PhilipsToken);
+            _magicHomeIntegration = new MagicHomeIntegration(this, _integrationConfig.MagicHomeUrl, _integrationConfig.MagicHomeToken);
 
             _launchpad = LaunchpadMk2.GetInstance().Result;
             

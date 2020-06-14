@@ -9,6 +9,7 @@ using Core.Launchpad.Impl.Mk2;
 using Lib.Click;
 using Lib.Config;
 using Lib.Integration.Discord;
+using Lib.Integration.MagicHome;
 using Lib.Integration.Media;
 using Lib.Integration.PhilipsHue;
 using Newtonsoft.Json;
@@ -28,12 +29,14 @@ public class LaunchpadManager
         private IntegrationConfig _integrationConfig;
 
         private PhilipsHueIntegration _philipsHueIntegration;
+        private MagicHomeIntegration _magicHomeIntegration;
 
         public LaunchpadManager()
         {
             LoadConfig();
             
             _philipsHueIntegration = new PhilipsHueIntegration(_integrationConfig.PhilipsUrl, _integrationConfig.PhilipsToken);
+            _magicHomeIntegration = new MagicHomeIntegration(_integrationConfig.MagicHomeUrl, _integrationConfig.MagicHomeToken);
 
             _launchpad = LaunchpadMk2.GetInstance().Result;
             
@@ -138,5 +141,7 @@ public class LaunchpadManager
         public DiscordInt DiscordInt => _discordInt;
 
         public PhilipsHueIntegration PhilipsHueIntegration => _philipsHueIntegration;
+
+        public MagicHomeIntegration MagicHomeIntegration => _magicHomeIntegration;
     }
 }

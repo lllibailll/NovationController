@@ -15,7 +15,12 @@ namespace Lib.Integration.Media
         [DllImport("user32.dll")]
         private static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, IntPtr extraInfo);
 
-        public MediaIntegration(LaunchpadManager launchpadManager, string actionPrefix) : base(launchpadManager, actionPrefix)
+        public MediaIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        {
+            
+        }
+        
+        protected override void LoadConfig()
         {
             
         }
@@ -60,9 +65,8 @@ namespace Lib.Integration.Media
                     }
                 }
             });
-            
         }
-        
+
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
         {
             

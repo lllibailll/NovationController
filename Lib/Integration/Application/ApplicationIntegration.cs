@@ -6,7 +6,12 @@ namespace Lib.Integration.Application
 {
     public class ApplicationIntegration : BaseIntegration
     {
-        public ApplicationIntegration(LaunchpadManager launchpadManager, string actionPrefix) : base(launchpadManager, actionPrefix)
+        public ApplicationIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        {
+            
+        }
+        
+        protected override void LoadConfig()
         {
             
         }

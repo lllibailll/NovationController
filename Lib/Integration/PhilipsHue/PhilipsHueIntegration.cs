@@ -13,21 +13,27 @@ namespace Lib.Integration.PhilipsHue
 {
     public class PhilipsHueIntegration : BaseIntegration
     {
-        private string _baseUrl;
-        private string _token;
-
         private WebClient _webClient;
+        private PhilipsHueConfig _config;
         
         private Dictionary<int, SmartItem> _items = new Dictionary<int, SmartItem>();
 
-        public PhilipsHueIntegration(LaunchpadManager launchpadManager, string actionPrefix, string baseUrl, string token) : 
-            base(launchpadManager, actionPrefix)
+        public PhilipsHueIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
         {
-            _baseUrl = baseUrl;
-            _token = token;
+            
+        }
+
+        public override void OnLoad()
+        {
             _webClient = new WebClient();
             
             LoadItems();
+        }
+
+        protected override void LoadConfig()
+        {
+            var configRaw = GetRawConfig() ?? CreateConfig(new PhilipsHueConfig());
+            _config = JsonConvert.DeserializeObject<PhilipsHueConfig>(configRaw);
         }
 
         private void Toggle(ClickableButton clickableButton, int id)
@@ -81,7 +87,7 @@ namespace Lib.Integration.PhilipsHue
             });
         }
 
-        private string BaseEndpoint => $"{_baseUrl}/{_token}";
+        private string BaseEndpoint => $"{_config.PhilipsUrl}/{_config.PhilipsToken}";
         private string LightsEndpoint => $"{BaseEndpoint}/lights";
         
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)

@@ -6,10 +6,16 @@ namespace Lib.Integration.Steam
 {
     public class SteamIntegration: BaseIntegration
     {
-        public SteamIntegration(LaunchpadManager launchpadManager, string actionPrefix) : base(launchpadManager, actionPrefix)
+        public SteamIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
         {
+            
         }
-        
+
+        protected override void LoadConfig()
+        {
+            
+        }
+
         private static void StartApp(long id)
         {
             var ps = new ProcessStartInfo(@$"steam://rungameid/{id}")

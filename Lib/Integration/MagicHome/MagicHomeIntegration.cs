@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using Lib.Click;
@@ -22,23 +23,31 @@ namespace Lib.Integration.MagicHome
         private const string ToggleOn = "71230fa3";
         private const string ToggleOff = "71240fa4";
 
-        private string _baseUrl;
-        private string _token;
+        private MagicHomeConfig _config;
 
         private RestClient _restClient;
 
         private List<MagicHomeDevice> _devices = new List<MagicHomeDevice>();
 
-        public MagicHomeIntegration(LaunchpadManager launchpadManager, string actionPrefix, string baseUrl, string token) : 
-            base(launchpadManager, actionPrefix)
+        public MagicHomeIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : 
+            base(launchpadManager, name, actionPrefix)
         {
-            _baseUrl = baseUrl;
-            _token = token;
-            _restClient = new RestClient(_baseUrl);
-            _restClient.AddDefaultHeader("token", _token);
+            
+        }
+
+        public override void OnLoad()
+        {
+            _restClient = new RestClient(_config.MagicHomeUrl);
+            _restClient.AddDefaultHeader("token", _config.MagicHomeToken);
             _restClient.UserAgent = UserAgent;
             
             LoadDevices();
+        }
+        
+        protected override void LoadConfig()
+        {
+            var configRaw = GetRawConfig() ?? CreateConfig(new MagicHomeConfig());
+            _config = JsonConvert.DeserializeObject<MagicHomeConfig>(configRaw);
         }
 
         private void LoadDevices()
@@ -127,9 +136,9 @@ namespace Lib.Integration.MagicHome
             return _devices.FirstOrDefault(x => x.DeviceData.DeviceName.ToLower().Equals(name.ToLower()));
         }
 
-        public string DeviceListEndpoint => $"{_baseUrl}/app/getMyBindDevicesAndState/ZG001";
-        public string DeviceToggleEndpoint => $"{_baseUrl}/app/sendCommandBatch/ZG001";
-        public string DeviceStatusEndpoint => $"{_baseUrl}/app/sendRequestCommand/ZG001";
+        public string DeviceListEndpoint => $"{_config.MagicHomeUrl}/app/getMyBindDevicesAndState/ZG001";
+        public string DeviceToggleEndpoint => $"{_config.MagicHomeUrl}/app/sendCommandBatch/ZG001";
+        public string DeviceStatusEndpoint => $"{_config.MagicHomeUrl}/app/sendRequestCommand/ZG001";
         
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
         {
@@ -145,7 +154,7 @@ namespace Lib.Integration.MagicHome
                 }
             });
         }
-        
+
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
         {
             clickableButton.LoadCallbacks.Add(() =>

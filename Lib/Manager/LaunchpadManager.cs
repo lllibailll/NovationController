@@ -6,7 +6,6 @@ using System.Linq;
 using Core.Launchpad.Button;
 using Core.Launchpad.Impl.Mk2;
 using Lib.Click;
-using Lib.Config;
 using Lib.Integration;
 using Lib.Integration.Application;
 using Lib.Integration.Discord;
@@ -28,8 +27,6 @@ namespace Lib.Manager
 
         private DiscordInt _discordInt;
 
-        private IntegrationConfig _integrationConfig;
-
         private List<BaseIntegration> _integrations = new List<BaseIntegration>();
         
         private MediaIntegration _mediaIntegration;
@@ -43,15 +40,13 @@ namespace Lib.Manager
         
         public LaunchpadManager()
         {
-            LoadConfig();
-
-            _mediaIntegration = new MediaIntegration(this, "Media");
-            _applicationIntegration = new ApplicationIntegration(this, "Proc");
-            _webIntegration = new WebIntegration(this, "Web");
-            _steamIntegration = new SteamIntegration(this, "Steam");
+            _mediaIntegration = new MediaIntegration(this, "Media", "Media");
+            _applicationIntegration = new ApplicationIntegration(this, "Application", "Proc");
+            _webIntegration = new WebIntegration(this, "Web", "Web");
+            _steamIntegration = new SteamIntegration(this, "Steam", "Steam");
             
-            _philipsHueIntegration = new PhilipsHueIntegration(this, "PhilipsHue", _integrationConfig.PhilipsUrl, _integrationConfig.PhilipsToken);
-            _magicHomeIntegration = new MagicHomeIntegration(this, "MagicHome", _integrationConfig.MagicHomeUrl, _integrationConfig.MagicHomeToken);
+            _philipsHueIntegration = new PhilipsHueIntegration(this, "PhilipsHue", "PhilipsHue");
+            _magicHomeIntegration = new MagicHomeIntegration(this, "MagicHome", "MagicHome");
 
             Launchpad = LaunchpadMk2.GetInstance().Result;
 
@@ -83,28 +78,6 @@ namespace Lib.Manager
             };
 
             LoadProfiles();
-        }
-
-        private void LoadConfig()
-        {
-            const string configFileName = "integrations_config.json";
-
-            if (File.Exists(configFileName))
-            {
-                _integrationConfig = JsonConvert.DeserializeObject<IntegrationConfig>(File.ReadAllText(configFileName));
-            }
-            else
-            {
-                Console.WriteLine("Integrations config does not exists, creating one...");
-                _integrationConfig = new IntegrationConfig();
-                var file = File.Create(configFileName);
-
-                var writerStream = new StreamWriter(file);
-                writerStream.Write(JsonConvert.SerializeObject(_integrationConfig));
-
-                writerStream.Close();
-                file.Close();
-            }
         }
 
         private void LoadProfiles()

@@ -23,6 +23,8 @@ namespace Lib.Integration.Discord
             _isRunning = true;
             _discord = new Discord.SDK.Discord(DiscordClientId, (ulong) CreateFlags.Default);
             
+            RequestAuth();
+            
             var thread = new Thread(() =>
             {
                 while (_isRunning)
@@ -31,6 +33,7 @@ namespace Lib.Integration.Discord
                     Thread.Sleep(1000 / 60);
                 }
             });
+            
             thread.Start();
         }
 

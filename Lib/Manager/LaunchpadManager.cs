@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using Core.Launchpad.Button;
 using Core.Launchpad.Impl.Mk2;
 using Lib.Click;
+using Lib.Config;
 using Lib.Integration.Discord;
 using Lib.Integration.Media;
+using Lib.Integration.PhilipsHue;
+using Newtonsoft.Json;
 
 namespace Lib.Manager
 {
@@ -21,8 +25,16 @@ public class LaunchpadManager
 
         private DiscordInt _discordInt;
 
+        private IntegrationConfig _integrationConfig;
+
+        private PhilipsHueIntegration _philipsHueIntegration;
+
         public LaunchpadManager()
         {
+            LoadConfig();
+            
+            _philipsHueIntegration = new PhilipsHueIntegration(_integrationConfig.PhilipsUrl, _integrationConfig.PhilipsToken);
+
             _launchpad = LaunchpadMk2.GetInstance().Result;
             
             _launchpad.Clear();
@@ -53,6 +65,28 @@ public class LaunchpadManager
                     }
                 }
             };
+        }
+
+        private void LoadConfig()
+        {
+            const string configFileName = "integrations_config.json";
+
+            if (File.Exists(configFileName))
+            {
+                _integrationConfig = JsonConvert.DeserializeObject<IntegrationConfig>(File.ReadAllText(configFileName));
+            }
+            else
+            {
+                Console.WriteLine("Integrations config does not exists, creating one...");
+                _integrationConfig = new IntegrationConfig();
+                var file = File.Create(configFileName);
+                
+                var writerStream = new StreamWriter(file);
+                writerStream.Write(JsonConvert.SerializeObject(_integrationConfig));
+                
+                writerStream.Close();
+                file.Close();
+            }
         }
 
         public LaunchpadMk2 Launchpad => _launchpad;
@@ -102,5 +136,7 @@ public class LaunchpadManager
         }
 
         public DiscordInt DiscordInt => _discordInt;
+
+        public PhilipsHueIntegration PhilipsHueIntegration => _philipsHueIntegration;
     }
 }

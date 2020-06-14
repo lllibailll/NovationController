@@ -88,7 +88,14 @@ namespace Lib.Integration.PhilipsHue
         {
             clickableButton.ClickCallbacks.Add(() =>
             {
-                Toggle(clickableButton, int.Parse(data[1]));
+                switch (data[1])
+                {
+                    case "Toggle":
+                    {
+                        Toggle(clickableButton, int.Parse(data[2]));
+                        break;
+                    }
+                }
             });
         }
         

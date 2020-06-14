@@ -135,7 +135,14 @@ namespace Lib.Integration.MagicHome
         {
             clickableButton.ClickCallbacks.Add(() =>
             {
-                Toggle(clickableButton, GetByMac(data[1]));
+                switch (data[1])
+                {
+                    case "Toggle":
+                    {
+                        Toggle(clickableButton, GetByMac(data[2]));
+                        break;
+                    }
+                }
             });
         }
         

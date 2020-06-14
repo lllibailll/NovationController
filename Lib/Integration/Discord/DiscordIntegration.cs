@@ -71,6 +71,11 @@ namespace Lib.Integration.Discord
         {
             _ipcClient.ToggleMuteStatus(!_discordVoiceStatus.Mute);
         }
+        
+        private void ToggleVoiceDeaf()
+        {
+            _ipcClient.ToggleDeafStatus(!_discordVoiceStatus.Deaf);
+        }
 
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
         {
@@ -89,6 +94,12 @@ namespace Lib.Integration.Discord
                             case "Mute":
                             {
                                 ToggleVoiceMute();
+                                break;
+                            }
+                            
+                            case "Deaf":
+                            {
+                                ToggleVoiceDeaf();
                                 break;
                             }
                         }

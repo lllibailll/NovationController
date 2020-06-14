@@ -146,6 +146,17 @@ public sealed class IpcClient : IDisposable
 
             _ipc.Write(OpCode.Frame, jObject);
         }
+        
+        public void ToggleDeafStatus(bool status)
+        {
+            var jObject = new JObject
+            {
+                {"cmd", "SET_VOICE_SETTINGS"}, 
+                {"args", new JObject {{"deaf", status}}}
+            };
+
+            _ipc.Write(OpCode.Frame, jObject);
+        }
 
         public void Subscribe(string name)
         {

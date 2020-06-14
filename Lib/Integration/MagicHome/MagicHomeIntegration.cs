@@ -133,18 +133,18 @@ namespace Lib.Integration.MagicHome
         
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
         {
-            clickableButton.ClickCallback = () =>
+            clickableButton.ClickCallbacks.Add(() =>
             {
                 Toggle(clickableButton, GetByMac(data[1]));
-            };
+            });
         }
         
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
         {
-            clickableButton.LoadCallback = () =>
+            clickableButton.LoadCallbacks.Add(() =>
             {
                 CheckButtonColor(clickableButton, GetByMac(data[1]));
-            };
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Lib.Click;
+﻿using System.Linq;
+using Lib.Click;
 using Lib.Manager;
 
 namespace Lib.Integration
@@ -17,26 +18,32 @@ namespace Lib.Integration
         
         public void CheckLoadAction(ClickableButton clickableButton)
         {
-            if (clickableButton.ClickRaw.StartsWith(_actionPrefix))
-            {
-                SetupLoadAction(clickableButton, GetData(clickableButton));
-            }
+            clickableButton.LoadRaws
+                .Where(x => x.StartsWith(_actionPrefix))
+                .ToList()
+                .ForEach(x =>
+                {
+                    SetupLoadAction(clickableButton, GetData(x));
+                });
         }
 
         public void CheckClickAction(ClickableButton clickableButton)
         {
-            if (clickableButton.ClickRaw.StartsWith(_actionPrefix))
-            {
-                SetupClickAction(clickableButton, GetData(clickableButton));
-            }
+            clickableButton.ClickRaws
+                .Where(x => x.StartsWith(_actionPrefix))
+                .ToList()
+                .ForEach(x =>
+                {
+                    SetupClickAction(clickableButton, GetData(x));
+                });
         }
 
         protected abstract void SetupLoadAction(ClickableButton clickableButton, string[] data);
         protected abstract void SetupClickAction(ClickableButton clickableButton, string[] data);
 
-        private static string[] GetData(ClickableButton clickableButton)
+        private static string[] GetData(string data)
         {
-            return clickableButton.ClickRaw.Split(LaunchpadManager.ProfileSplitter);
+            return data.Split(LaunchpadManager.ProfileSplitter);
         }
     }
 }

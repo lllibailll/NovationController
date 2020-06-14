@@ -37,13 +37,30 @@ namespace Lib.Integration.Media
 
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
         {
-            clickableButton.ClickCallback = data[1] switch
+            clickableButton.ClickCallbacks.Add(() =>
             {
-                "Prev" => Prev,
-                "Next" => Next,
-                "PlayPause" => PlayPause,
-                _ => clickableButton.ClickCallback
-            };
+                switch (data[1])
+                {
+                    case "Prev":
+                    {
+                        Prev();
+                        break;
+                    }
+                    
+                    case "Next":
+                    {
+                        Next();
+                        break;
+                    }
+                    
+                    case "PlayPause":
+                    {
+                        PlayPause();
+                        break;
+                    }
+                }
+            });
+            
         }
         
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)

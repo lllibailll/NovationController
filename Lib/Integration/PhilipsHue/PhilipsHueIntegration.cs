@@ -86,18 +86,18 @@ namespace Lib.Integration.PhilipsHue
         
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
         {
-            clickableButton.ClickCallback = () =>
+            clickableButton.ClickCallbacks.Add(() =>
             {
                 Toggle(clickableButton, int.Parse(data[1]));
-            };
+            });
         }
         
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
         {
-            clickableButton.LoadCallback = () =>
+            clickableButton.LoadCallbacks.Add(() =>
             {
                 CheckButtonColor(clickableButton, GetById(int.Parse(data[1])));
-            };
+            });
         }
     }
 }

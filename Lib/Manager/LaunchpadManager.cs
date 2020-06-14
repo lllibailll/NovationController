@@ -77,8 +77,7 @@ namespace Lib.Manager
                     {
                         Console.WriteLine($"Button @ {button.X},{button.Y} of profile {_activeProfile.Name} clicked!");
                         var clickableButton = _activeProfile.Buttons.FirstOrDefault(x => x.X == button.X && x.Y == button.Y);
-                        var clickCallback = clickableButton?.ClickCallback;
-                        clickCallback?.Invoke();
+                        clickableButton?.ClickCallbacks.ForEach(x => x.Invoke());
                     }
                 }
             };
@@ -150,18 +149,21 @@ namespace Lib.Manager
 
         private void RegisterButtonActions(ClickableButton clickableButton)
         {
-            _integrations.ForEach(x =>
+            if (clickableButton.LoadRaws.Count > 0)
             {
-                if (!string.IsNullOrEmpty(clickableButton.LoadRaw))
+                _integrations.ForEach(x =>
                 {
                     x.CheckLoadAction(clickableButton);
-                }
-                
-                if (!string.IsNullOrEmpty(clickableButton.ClickRaw))
+                });
+            }
+            
+            if (clickableButton.ClickRaws.Count > 0)
+            {
+                _integrations.ForEach(x =>
                 {
                     x.CheckClickAction(clickableButton);
-                }
-            });
+                });
+            }
         }
 
         private LaunchpadProfile GetByCoords(int coordX, int coordY)
@@ -176,7 +178,7 @@ namespace Lib.Manager
             {
                 Launchpad.SetGridButtonColor(x.X, x.Y, x.Color);
 
-                x.LoadCallback?.Invoke();
+                x.LoadCallbacks.ForEach(y => y.Invoke());
             });
             Launchpad.SetGridButtonColor(launchpadProfile.CoordX, launchpadProfile.CoordY, Color.Aqua);
             _activeProfile = launchpadProfile;

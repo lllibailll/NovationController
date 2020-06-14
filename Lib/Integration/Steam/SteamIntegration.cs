@@ -22,10 +22,10 @@ namespace Lib.Integration.Steam
 
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)
         {
-            clickableButton.ClickCallback = () =>
+            clickableButton.ClickCallbacks.Add(() =>
             {
                 StartApp(int.Parse(data[1]));
-            };
+            });
         }
         
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)

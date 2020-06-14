@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Newtonsoft.Json;
 
@@ -22,13 +23,13 @@ namespace Lib.Click
         public Color Color { get; set; }
         
         [JsonProperty("click")]
-        public string ClickRaw { get; set; }
+        public List<string> ClickRaws { get; set; }
         
         [JsonProperty("load")]
-        public string LoadRaw { get; set; }
+        public List<string> LoadRaws { get; set; }
 
-        public Action LoadCallback { get; set; }
+        public List<Action> LoadCallbacks { get; set; } = new List<Action>();
         
-        public Action ClickCallback { get; set; }
+        public List<Action> ClickCallbacks { get; set; } = new List<Action>();
     }
 }

@@ -41,6 +41,11 @@ namespace Lib.Integration.Discord
             {
                 Console.WriteLine($"ERROR {args.Message}");
             };
+
+            _ipcClient.OnReady += (sender, args) =>
+            {
+                _ipcClient.Subscribe("VOICE_SETTINGS_UPDATE");
+            };
             
             _ipcClient.OnVoiceSettingsUpdate += (sender, args) =>
             {

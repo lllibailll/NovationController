@@ -29,6 +29,8 @@ public sealed class IpcClient : IDisposable
 
         #region Events
         
+        public event EventHandler<ReadyEvent> OnReady;
+        
         public event EventHandler<PacketEventArgs> OnPacketSent;
         
         public event EventHandler<AuthorizeEvent> OnAuthorize;
@@ -340,7 +342,8 @@ public sealed class IpcClient : IDisposable
         
         private void SetReady()
         {
-            Subscribe("VOICE_SETTINGS_UPDATE");
+            OnReady?.Invoke(this, new ReadyEvent());
+            ClientState = State.Connected;
         }
 
         public void Dispose()

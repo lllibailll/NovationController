@@ -192,7 +192,39 @@ namespace ConsoleApp
                 }
             });
             
+            var profileLights = new LaunchpadProfile
+            {
+                Id = 2,
+                Name = "Hue profile",
+                LaunchpadCoord = new LaunchpadCoord(8, 0)
+            };
+            
+            profileLights.AddButton(new ClickableButton
+            {
+                Name = "Mesilla 2",
+                X = 2,
+                Y = 0,
+                Color = Color.Yellow,
+                ClickCallback = () =>
+                {
+                    _launchpadManager.PhilipsHueIntegration.Toggle(2, true);
+                }
+            });
+            
+            profileLights.AddButton(new ClickableButton
+            {
+                Name = "Mesilla 1",
+                X = 5,
+                Y = 0,
+                Color = Color.Yellow,
+                ClickCallback = () =>
+                {
+                    _launchpadManager.PhilipsHueIntegration.Toggle(1, true);
+                }
+            });
+            
             _launchpadManager.AddProfile(profileTest);
+            _launchpadManager.AddProfile(profileLights);
         }
 
         private void HandleExitEvents()

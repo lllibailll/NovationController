@@ -11,6 +11,7 @@ using Lib.Integration.Application;
 using Lib.Integration.Discord;
 using Lib.Integration.MagicHome;
 using Lib.Integration.Media;
+using Lib.Integration.NovationController;
 using Lib.Integration.PhilipsHue;
 using Lib.Integration.Steam;
 using Newtonsoft.Json;
@@ -20,33 +21,29 @@ namespace Lib.Manager
     public class LaunchpadManager
     {
         public const string ProfileSplitter = ";|;";
+
+        private bool _lights = true;
+
+        private bool _isRunning = true;
         
         private List<LaunchpadProfile> _profiles = new List<LaunchpadProfile>();
 
         private LaunchpadProfile _activeProfile;
 
         private List<BaseIntegration> _integrations = new List<BaseIntegration>();
-        
-        private MediaIntegration _mediaIntegration;
-        private ApplicationIntegration _applicationIntegration;
-        private WebIntegration _webIntegration;
-        private SteamIntegration _steamIntegration;
-        private PhilipsHueIntegration _philipsHueIntegration;
-        private MagicHomeIntegration _magicHomeIntegration;
-        private DiscordIntegration _discordIntegration;
 
         public LaunchpadMk2 Launchpad { get; }
         
         public LaunchpadManager()
         {
-            _mediaIntegration = new MediaIntegration(this, "Media", "Media");
-            _applicationIntegration = new ApplicationIntegration(this, "Application", "Proc");
-            _webIntegration = new WebIntegration(this, "Web", "Web");
-            _steamIntegration = new SteamIntegration(this, "Steam", "Steam");
-            _discordIntegration = new DiscordIntegration(this, "Discord", "Discord");
-            
-            _philipsHueIntegration = new PhilipsHueIntegration(this, "PhilipsHue", "PhilipsHue");
-            _magicHomeIntegration = new MagicHomeIntegration(this, "MagicHome", "MagicHome");
+            new NovationControllerIntegration(this, "NovationController", "NovationController");
+            new MediaIntegration(this, "Media", "Media");
+            new ApplicationIntegration(this, "Application", "Proc");
+            new WebIntegration(this, "Web", "Web");
+            new SteamIntegration(this, "Steam", "Steam");
+            new DiscordIntegration(this, "Discord", "Discord");
+            new PhilipsHueIntegration(this, "PhilipsHue", "PhilipsHue");
+            new MagicHomeIntegration(this, "MagicHome", "MagicHome");
 
             Launchpad = LaunchpadMk2.GetInstance().Result;
 
@@ -97,6 +94,26 @@ namespace Lib.Manager
         public void Shutdown()
         {
             Launchpad.Clear();
+            
+            _integrations.ForEach(x => x.OnStop());
+            
+            Environment.Exit(0);
+        }
+
+        public void ToggleLights()
+        {
+            if (_lights)
+            {
+                _activeProfile.Buttons.ForEach(x => SetButtonColor(x, Color.Empty));
+                SetProfileButtonLight(Color.Empty);
+            }
+            else
+            {
+                _activeProfile.Buttons.ForEach(x => SetButtonColor(x, x.Color));
+                SetProfileButtonLight(Color.Aqua);
+            }
+
+            _lights = !_lights;
         }
 
         public void SetButtonColor(ClickableButton clickableButton, Color color)
@@ -153,8 +170,13 @@ namespace Lib.Manager
 
                 x.LoadCallbacks.ForEach(y => y.Invoke());
             });
-            Launchpad.SetGridButtonColor(launchpadProfile.CoordX, launchpadProfile.CoordY, Color.Aqua);
             _activeProfile = launchpadProfile;
+            SetProfileButtonLight(Color.Aqua);
+        }
+
+        private void SetProfileButtonLight(Color color)
+        {
+            Launchpad.SetGridButtonColor(_activeProfile.CoordX, _activeProfile.CoordY, color);
         }
 
         public void RegisterIntegration(BaseIntegration integration)

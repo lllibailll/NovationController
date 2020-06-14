@@ -28,6 +28,11 @@ namespace Lib.Integration.Discord
             _ipcClient.Init(_config, _authConfig);
         }
 
+        public override void OnStop()
+        {
+            _ipcClient.Close();
+        }
+
         private void ListenDiscordEvents()
         {
             _ipcClient.OnAuthorize += (sender, args) =>

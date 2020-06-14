@@ -100,6 +100,11 @@ namespace Lib.Integration
         {
             
         }
+        
+        public virtual void OnStop()
+        {
+            
+        }
 
         protected abstract void SetupLoadAction(ClickableButton clickableButton, string[] data);
         protected abstract void SetupClickAction(ClickableButton clickableButton, string[] data);

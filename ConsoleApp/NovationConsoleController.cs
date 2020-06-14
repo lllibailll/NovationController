@@ -33,11 +33,6 @@ namespace ConsoleApp
 
         private void HandleExitEvents()
         {
-            AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
-            {
-                _launchpadManager.Shutdown();
-            };
-
             Console.CancelKeyPress += (sender, args) =>
             {
                 _launchpadManager.Shutdown();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -99,6 +99,11 @@ public class LaunchpadManager
             _launchpad.Clear();
         }
 
+        public void SetButtonColor(ClickableButton clickableButton, Color color)
+        {
+            _launchpad.SetGridButtonColor(clickableButton.X, clickableButton.Y, color);
+        }
+
         public void AddProfile(LaunchpadProfile launchpadProfile)
         {
             if (GetByCoords(launchpadProfile.LaunchpadCoord.X, launchpadProfile.LaunchpadCoord.Y) != null)
@@ -126,6 +131,8 @@ public class LaunchpadManager
             launchpadProfile.Buttons.ForEach(x =>
             {
                 _launchpad.SetGridButtonColor(x.X, x.Y, x.Color);
+
+                x.LoadCallback?.Invoke();
             });
             var profileButton = launchpadProfile.LaunchpadCoord;
             _launchpad.SetGridButtonColor(profileButton.X, profileButton.Y, Color.Aqua);

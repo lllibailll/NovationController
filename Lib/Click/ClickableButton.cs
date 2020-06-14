@@ -9,6 +9,7 @@ namespace Lib.Click
         public int X { get; set; }
         public int Y { get; set; }
         public Color Color { get; set; }
+        public Action LoadCallback { get; set; }
         public Action ClickCallback { get; set; }
     }
 }

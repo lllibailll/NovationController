@@ -71,5 +71,10 @@ namespace Lib.Integration.Media
         {
             
         }
+        
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
+        {
+            
+        }
     }
 }

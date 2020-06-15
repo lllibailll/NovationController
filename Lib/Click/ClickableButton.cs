@@ -27,9 +27,14 @@ namespace Lib.Click
         
         [JsonProperty("load")]
         public List<string> LoadRaws { get; set; }
+        
+        [JsonProperty("color_controller")]
+        public string ColorControllerRaw { get; set; }
 
         public List<Action> LoadCallbacks { get; set; } = new List<Action>();
         
         public List<Action> ClickCallbacks { get; set; } = new List<Action>();
+        
+        public Action ColorControllerCallback { get; set; }
     }
 }

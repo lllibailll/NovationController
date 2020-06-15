@@ -15,7 +15,7 @@ namespace Lib.Integration.Steam
             
         }
 
-        private static void StartApp(long id)
+        private void StartApp(long id)
         {
             var ps = new ProcessStartInfo(@$"steam://rungameid/{id}")
             { 
@@ -35,6 +35,11 @@ namespace Lib.Integration.Steam
         }
         
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
+        {
+            
+        }
+        
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
         {
             
         }

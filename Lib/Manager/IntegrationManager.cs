@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Lib.Integration;
 using Lib.Integration.Application;
 using Lib.Integration.Discord;
@@ -16,7 +17,7 @@ namespace Lib.Manager
     {
         private readonly ILog Log = LogManager.GetLogger("nc", "integration-manager");
         private NovationController _novationController;
-        
+
         public List<BaseIntegration> Integrations { get; } = new List<BaseIntegration>();
 
         public IntegrationManager(NovationController novationController)
@@ -36,10 +37,21 @@ namespace Lib.Manager
             new PhilipsHueIntegration(_novationController, "PhilipsHue", "PhilipsHue");
             new MagicHomeIntegration(_novationController, "MagicHome", "MagicHome");
         }
-        
+
         public void RegisterIntegration(BaseIntegration integration)
         {
             Integrations.Add(integration);
+        }
+
+        public void FireColorControl(BaseIntegration integration)
+        {
+            _novationController.ProfileManager.ActiveProfile.Buttons
+                .Where(x => x.ColorControllerCallback != null && x.ColorControllerRaw.StartsWith(integration.Name))
+                .ToList()
+                .ForEach(x =>
+                {
+                    x.ColorControllerCallback.Invoke();
+                });
         }
 
         public void Shutdown()

@@ -88,6 +88,14 @@ namespace Lib.Manager
                     x.CheckClickAction(clickableButton);
                 });
             }
+
+            if (!string.IsNullOrEmpty(clickableButton.ColorControllerRaw))
+            {
+                _novationController.IntegrationManager.Integrations.ForEach(x =>
+                {
+                    x.CheckColorController(clickableButton);
+                });
+            }
         }
     }
 }

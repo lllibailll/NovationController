@@ -10,9 +10,9 @@ namespace Lib.Integration
 {
     public abstract class BaseIntegration
     {
-        protected static ILog Log;
+        protected ILog Log;
         protected Lib.NovationController _novationController;
-        private string _name;
+        public string Name { get; }
         private string _actionPrefix;
 
         private string IntegrationPath;
@@ -22,11 +22,11 @@ namespace Lib.Integration
             Log = LogManager.GetLogger("nc", $"{name.ToLower()}-integration");
             Log.Info("Loading...");
             _novationController = novationController;
-            _name = name;
+            Name = name;
             _actionPrefix = actionPrefix;
             _novationController.IntegrationManager.RegisterIntegration(this);
             
-            IntegrationPath = $"Config/Integration/{_name}";
+            IntegrationPath = $"Config/Integration/{Name}";
             LoadConfig();
             
             OnLoad();
@@ -53,11 +53,19 @@ namespace Lib.Integration
                     SetupClickAction(clickableButton, GetData(x));
                 });
         }
+        
+        public void CheckColorController(ClickableButton clickableButton)
+        {
+            if (clickableButton.ColorControllerRaw.StartsWith(_actionPrefix))
+            {
+                SetupColorControllerAction(clickableButton, GetData(clickableButton.ColorControllerRaw));
+            }
+        }
 
         protected string CreateConfig<T>(T config)
         {
-            Log.Debug($"Creating config for {_name}");
-            var file = File.Create($"Config/Integration/{_name}/config.json");
+            Log.Debug($"Creating config for {Name}");
+            var file = File.Create($"Config/Integration/{Name}/config.json");
 
             var raw = JsonConvert.SerializeObject(config);
 
@@ -74,7 +82,7 @@ namespace Lib.Integration
         {
             if (!Directory.Exists(IntegrationPath))
             {
-                Directory.CreateDirectory($"Config/Integration/{_name}");
+                Directory.CreateDirectory($"Config/Integration/{Name}");
             }
 
             var path = $"{IntegrationPath}/{name}";
@@ -105,6 +113,7 @@ namespace Lib.Integration
 
         protected abstract void SetupLoadAction(ClickableButton clickableButton, string[] data);
         protected abstract void SetupClickAction(ClickableButton clickableButton, string[] data);
+        protected abstract void SetupColorControllerAction(ClickableButton clickableButton, string[] data);
         protected abstract void LoadConfig();
 
         private static string[] GetData(string data)

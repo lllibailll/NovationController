@@ -160,5 +160,10 @@ namespace Lib.Integration.MagicHome
                 CheckButtonColor(clickableButton, GetByMac(data[1]));
             });
         }
+        
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
+        {
+            
+        }
     }
 }

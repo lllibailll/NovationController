@@ -39,5 +39,10 @@ namespace Lib.Integration.NovationController
         {
             
         }
+        
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
+        {
+            
+        }
     }
 }

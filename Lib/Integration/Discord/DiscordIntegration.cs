@@ -113,5 +113,10 @@ namespace Lib.Integration.Discord
                 }
             });
         }
+        
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
+        {
+            
+        }
     }
 }

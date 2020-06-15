@@ -17,7 +17,7 @@ namespace Lib.Integration.Application
             
         }
         
-        private static void StartApp(string path)
+        private void StartApp(string path)
         {
             var startInfo = new ProcessStartInfo
             {
@@ -37,6 +37,11 @@ namespace Lib.Integration.Application
         }
 
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
+        {
+            
+        }
+        
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
         {
             
         }

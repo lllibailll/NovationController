@@ -16,7 +16,7 @@ namespace Lib.Integration.Application
             
         }
 
-        private static void OpenWeb(string path)
+        private void OpenWeb(string path)
         {
             var ps = new ProcessStartInfo(path)
             { 
@@ -36,6 +36,11 @@ namespace Lib.Integration.Application
         }
         
         protected override void SetupLoadAction(ClickableButton clickableButton, string[] data)
+        {
+            
+        }
+        
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
         {
             
         }

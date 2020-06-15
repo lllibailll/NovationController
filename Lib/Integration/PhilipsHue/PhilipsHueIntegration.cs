@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Net;
 using Lib.Click;
 using Lib.Integration.PhilipsHue.Model;
 using Lib.Integration.PhilipsHue.Model.Interact;
-using Lib.Manager;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -51,8 +49,6 @@ namespace Lib.Integration.PhilipsHue
 
             SetStatus(clickableButton, id, !item.State.On);
 
-            item.State.On = !item.State.On;
-            
             CheckButtonColor(clickableButton, GetById(id));
         }
 
@@ -74,6 +70,10 @@ namespace Lib.Integration.PhilipsHue
             }));
             
             var res = _restClient.Put(req).Content;
+            
+            item.State.On = !item.State.On;
+            
+            _novationController.IntegrationManager.FireColorControl(this);
             
             Log.Debug($"Toggle {id}: {res}");
         }
@@ -103,7 +103,7 @@ namespace Lib.Integration.PhilipsHue
             req.AddJsonBody(JsonConvert.SerializeObject(colorToggle));
             
             var res = _restClient.Put(req).Content;
-            
+
             Log.Debug($"Color res: {res}");
         }
 
@@ -219,6 +219,22 @@ namespace Lib.Integration.PhilipsHue
             {
                 CheckButtonColor(clickableButton, GetById(int.Parse(data[1])));
             });
+        }
+
+        protected override void SetupColorControllerAction(ClickableButton clickableButton, string[] data)
+        {
+            clickableButton.ColorControllerCallback = () =>
+            {
+                switch (data[1])
+                {
+                    case "Status":
+                    {
+                        var device = GetById(int.Parse(data[2]));
+                        CheckButtonColor(clickableButton, device);
+                        break;
+                    }
+                }
+            };
         }
     }
 }

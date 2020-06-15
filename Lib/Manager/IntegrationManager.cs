@@ -8,11 +8,13 @@ using Lib.Integration.Media;
 using Lib.Integration.NovationController;
 using Lib.Integration.PhilipsHue;
 using Lib.Integration.Steam;
+using log4net;
 
 namespace Lib.Manager
 {
     public class IntegrationManager
     {
+        private readonly ILog Log = LogManager.GetLogger("nc", "integration-manager");
         private NovationController _novationController;
         
         public List<BaseIntegration> Integrations { get; } = new List<BaseIntegration>();
@@ -24,7 +26,7 @@ namespace Lib.Manager
 
         public void LoadIntegrations()
         {
-            Console.WriteLine("Loading integrations...");
+            Log.Info("Loading integrations...");
             new NovationControllerIntegration(_novationController, "NovationController", "NovationController");
             new MediaIntegration(_novationController, "Media", "Media");
             new ApplicationIntegration(_novationController, "Application", "Proc");

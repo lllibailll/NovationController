@@ -3,12 +3,14 @@ using System.IO;
 using System.Linq;
 using Lib.Click;
 using Lib.Manager;
+using log4net;
 using Newtonsoft.Json;
 
 namespace Lib.Integration
 {
     public abstract class BaseIntegration
     {
+        protected static ILog Log;
         protected Lib.NovationController _novationController;
         private string _name;
         private string _actionPrefix;
@@ -17,7 +19,8 @@ namespace Lib.Integration
 
         public BaseIntegration(Lib.NovationController novationController, string name, string actionPrefix)
         {
-            Console.WriteLine($"Loading {name} integration.");
+            Log = LogManager.GetLogger("nc", $"{name.ToLower()}-integration");
+            Log.Info("Loading...");
             _novationController = novationController;
             _name = name;
             _actionPrefix = actionPrefix;
@@ -51,14 +54,9 @@ namespace Lib.Integration
                 });
         }
 
-        protected string GetRawConfig()
-        {
-            return GetRawConfig("config.json");
-        }
-
         protected string CreateConfig<T>(T config)
         {
-            Console.WriteLine($"Creating config for {_name}");
+            Log.Debug($"Creating config for {_name}");
             var file = File.Create($"Config/Integration/{_name}/config.json");
 
             var raw = JsonConvert.SerializeObject(config);
@@ -72,7 +70,7 @@ namespace Lib.Integration
             return raw;
         }
 
-        protected string GetRawConfig(string name)
+        protected string GetRawConfig(string name = "config.json")
         {
             if (!Directory.Exists(IntegrationPath))
             {

@@ -105,8 +105,6 @@ public sealed class IpcClient : IDisposable
                 var config = data["config"] as JObject;
 
                 var endpoint = config["api_endpoint"].ToString();
-            
-                Console.WriteLine($"Got client at @ {endpoint}");
             }
             catch (Exception e)
             {
@@ -338,7 +336,6 @@ public sealed class IpcClient : IDisposable
                 case "AUTHORIZE":
                 {
                     var token = data["code"].ToString();
-                    Console.WriteLine($"Got token! {token}");
                     Oauth(token);
                     break;
                 }

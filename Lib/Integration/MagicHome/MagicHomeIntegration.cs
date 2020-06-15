@@ -50,7 +50,7 @@ namespace Lib.Integration.MagicHome
 
         private void LoadDevices()
         {
-            Console.WriteLine("[MagicHome] Loading devices...");
+            Log.Info("Loading devices...");
 
             var res = _restClient.Get(new RestRequest(DeviceListEndpoint, DataFormat.Json));
             _devices = JsonConvert.DeserializeObject<DeviceListResponse>(res.Content).Data.Select(x => new MagicHomeDevice
@@ -61,7 +61,7 @@ namespace Lib.Integration.MagicHome
 
             _devices.ForEach(x =>
             {
-                Console.WriteLine($"[MagicHome] Found {x.DeviceData.DeviceName}");
+                Log.Debug($"Found {x.DeviceData.DeviceName}");
             });
 
             _devices
@@ -80,7 +80,7 @@ namespace Lib.Integration.MagicHome
 
                     var status = JsonConvert.DeserializeObject<DeviceStatusResponse>(deviceStatusRaw);
                     x.On = status.Data.Equals(StatusOn);
-                    Console.WriteLine($"[MagicHome] {x.DeviceData.DeviceName} is on: {x.On}");
+                    Log.Debug($"[MagicHome] {x.DeviceData.DeviceName} is on: {x.On}");
                 });
         }
 
@@ -109,7 +109,7 @@ namespace Lib.Integration.MagicHome
 
             CheckButtonColor(clickableButton, magicHomeDevice);
             
-            Console.WriteLine($"[MagicHome] Toggle res: {res}");
+            Log.Debug($"[MagicHome] Toggle res: {res}");
         }
 
         private void CheckButtonColor(ClickableButton clickableButton, MagicHomeDevice magicHomeDevice)

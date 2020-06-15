@@ -3,11 +3,13 @@ using System.Drawing;
 using Core.Launchpad.Button;
 using Core.Launchpad.Impl.Mk2;
 using Lib.Click;
+using log4net;
 
 namespace Lib.Manager
 {
     public class LaunchpadManager
     {
+        private readonly ILog Log = LogManager.GetLogger("nc", "launchpad-manager");
         public const string ProfileSplitter = ";|;";
 
         private bool _lights = true;

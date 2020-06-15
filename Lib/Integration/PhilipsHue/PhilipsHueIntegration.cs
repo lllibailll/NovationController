@@ -20,7 +20,6 @@ namespace Lib.Integration.PhilipsHue
 
         public PhilipsHueIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
-            
         }
 
         public override void OnLoad()
@@ -54,7 +53,7 @@ namespace Lib.Integration.PhilipsHue
             
             CheckButtonColor(clickableButton, GetById(id));
             
-            Console.WriteLine($"[Philips] Toggle {id}: {res}");
+            Log.Debug($"Toggle {id}: {res}");
         }
 
         private void CheckButtonColor(ClickableButton clickableButton, SmartItem smartItem)
@@ -76,14 +75,14 @@ namespace Lib.Integration.PhilipsHue
 
         private void LoadItems()
         {
-            Console.WriteLine($"[Philips] Loading items...");
+            Log.Info($"Loading items...");
             
             var res = _webClient.DownloadString(LightsEndpoint);
             _items = JsonConvert.DeserializeObject<Dictionary<int, SmartItem>>(res);
             
             _items.Values.ToList().ForEach(x =>
             {
-                Console.WriteLine($"[Philips] Found {x.Name}");
+                Log.Debug($"Found {x.Name}");
             });
         }
 

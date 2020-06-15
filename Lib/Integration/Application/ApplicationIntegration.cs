@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Lib.Click;
 using Lib.Manager;
+using log4net.Repository.Hierarchy;
 
 namespace Lib.Integration.Application
 {
@@ -24,6 +25,7 @@ namespace Lib.Integration.Application
                 UseShellExecute = true
             };
             Process.Start(startInfo);
+            Log.Debug($"Started {path}");
         }
 
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)

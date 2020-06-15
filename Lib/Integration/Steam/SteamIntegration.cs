@@ -23,6 +23,7 @@ namespace Lib.Integration.Steam
                 Verb = "open" 
             };
             Process.Start(ps);
+            Log.Debug($"Launching {id}");
         }
 
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)

@@ -1,10 +1,16 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using Lib.Manager;
+using log4net;
+using log4net.Config;
 
 namespace Lib
 {
     public class NovationController
     {
+        private ILog Log;
+        
         private bool _isRunning = true;
 
         public LaunchpadManager LaunchpadManager { get; }
@@ -13,6 +19,8 @@ namespace Lib
 
         public NovationController()
         {
+            InitLogger();
+
             LaunchpadManager = new LaunchpadManager(this);
             
             IntegrationManager = new IntegrationManager(this);
@@ -22,11 +30,20 @@ namespace Lib
             ProfileManager.LoadProfiles();
             LaunchpadManager.RegisterButtonListener();
             
-            Console.WriteLine("Novation Controller is ready!");
+            Log.Info("Ready!");
+        }
+
+        private void InitLogger()
+        {
+            LogManager.CreateRepository("nc");
+            var logRepository = LogManager.GetRepository("nc");
+            XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
+            Log = LogManager.GetLogger("nc", "novation-control");
         }
 
         public void Shutdown()
         {
+            Log.Info("Shutting down...");
             _isRunning = false;
             LaunchpadManager.Shutdown();
             IntegrationManager.Shutdown();

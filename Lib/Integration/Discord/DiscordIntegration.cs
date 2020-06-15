@@ -44,7 +44,7 @@ namespace Lib.Integration.Discord
 
             _ipcClient.OnError += (sender, args) =>
             {
-                Console.WriteLine($"ERROR {args.Message}");
+                Log.Error(args.Message);
             };
 
             _ipcClient.OnReady += (sender, args) =>

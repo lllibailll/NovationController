@@ -24,6 +24,7 @@ namespace Lib.Integration.Application
                 Verb = "open" 
             };
             Process.Start(ps);
+            Log.Debug($"Opened {path}");
         }
 
         protected override void SetupClickAction(ClickableButton clickableButton, string[] data)

@@ -25,6 +25,19 @@ namespace Lib.Manager
         {
             _novationController = novationController;
         }
+
+        public void Reload()
+        {
+            var currentName = ActiveProfile.Name;
+            _profiles.Clear();
+            LoadProfiles();
+            
+            var previousProfile = _profiles.FirstOrDefault(x => x.Name.Equals(currentName));
+            if (previousProfile != null)
+            {
+                SetProfileActive(previousProfile);
+            }
+        }
         
         public void LoadProfiles()
         {

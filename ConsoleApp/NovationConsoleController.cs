@@ -26,9 +26,13 @@ namespace ConsoleApp
                     case "c":
                         _novationController.LaunchpadManager.Launchpad.Clear();
                         break;
+
+                    case "r":
+                    {
+                        _novationController.ProfileManager.Reload();
+                        break;
+                    }
                 }
-                
-                Console.Clear();
             }
         }
 

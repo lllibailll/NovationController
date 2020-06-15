@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -107,6 +107,17 @@ namespace Lib.Integration.PhilipsHue
             Log.Debug($"Color res: {res}");
         }
 
+        private void EnableScene(string id)
+        {
+            var req = new RestRequest($"/groups/{id}/action");
+            req.AddJsonBody(JsonConvert.SerializeObject(new StateToggle
+            {
+                On = true
+            }));
+            
+            var res = _restClient.Put(req).Content;
+        }
+        
         private void CheckButtonColor(ClickableButton clickableButton, SmartItem smartItem)
         {
             if (smartItem.State.On)
@@ -207,6 +218,12 @@ namespace Lib.Integration.PhilipsHue
                     case "Color":
                     {
                         SetColor(clickableButton, int.Parse(data[2]), int.Parse(data[3]), int.Parse(data[4]), int.Parse(data[5]), int.Parse(data[6]) * 2);
+                        break;
+                    }
+                    
+                    case "Scene":
+                    {
+                        EnableScene(data[2]);
                         break;
                     }
                 }

@@ -206,7 +206,7 @@ namespace Lib.Integration.PhilipsHue
 
                     case "Color":
                     {
-                        SetColor(clickableButton, int.Parse(data[2]), int.Parse(data[3]), int.Parse(data[4]), int.Parse(data[5]), int.Parse(data[6]));
+                        SetColor(clickableButton, int.Parse(data[2]), int.Parse(data[3]), int.Parse(data[4]), int.Parse(data[5]), int.Parse(data[6]) * 2);
                         break;
                     }
                 }

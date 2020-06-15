@@ -1,15 +1,16 @@
 ﻿using System;
+using Lib;
 using Lib.Manager;
 
 namespace ConsoleApp
 {
     public class NovationConsoleController
     {
-        private LaunchpadManager _launchpadManager;
+        private NovationController _novationController;
 
         public NovationConsoleController()
         {
-            _launchpadManager = new LaunchpadManager();
+            _novationController = new NovationController();
 
             HandleExitEvents();
 
@@ -23,7 +24,7 @@ namespace ConsoleApp
                 switch(input.ToLower())
                 {
                     case "c":
-                        _launchpadManager.Launchpad.Clear();
+                        _novationController.LaunchpadManager.Launchpad.Clear();
                         break;
                 }
                 
@@ -35,7 +36,7 @@ namespace ConsoleApp
         {
             Console.CancelKeyPress += (sender, args) =>
             {
-                _launchpadManager.Shutdown();
+                _novationController.Shutdown();
             };
         }
     }

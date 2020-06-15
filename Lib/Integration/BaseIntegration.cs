@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Lib.Click;
@@ -10,20 +9,20 @@ namespace Lib.Integration
 {
     public abstract class BaseIntegration
     {
-        protected LaunchpadManager _launchpadManager;
+        protected Lib.NovationController _novationController;
         private string _name;
         private string _actionPrefix;
 
         private string IntegrationPath;
 
-        public BaseIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix)
+        public BaseIntegration(Lib.NovationController novationController, string name, string actionPrefix)
         {
-            _launchpadManager = launchpadManager;
+            Console.WriteLine($"Loading {name} integration.");
+            _novationController = novationController;
             _name = name;
             _actionPrefix = actionPrefix;
-            _launchpadManager.RegisterIntegration(this);
+            _novationController.IntegrationManager.RegisterIntegration(this);
             
-            Console.WriteLine("Loading config...");
             IntegrationPath = $"Config/Integration/{_name}";
             LoadConfig();
             

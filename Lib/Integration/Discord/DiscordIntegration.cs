@@ -15,7 +15,7 @@ namespace Lib.Integration.Discord
 
         private DiscordVoiceStatus _discordVoiceStatus = new DiscordVoiceStatus();
 
-        public DiscordIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        public DiscordIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
         }
 

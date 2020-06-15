@@ -29,10 +29,8 @@ namespace Lib.Integration.MagicHome
 
         private List<MagicHomeDevice> _devices = new List<MagicHomeDevice>();
 
-        public MagicHomeIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : 
-            base(launchpadManager, name, actionPrefix)
+        public MagicHomeIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
-            
         }
 
         public override void OnLoad()
@@ -118,11 +116,11 @@ namespace Lib.Integration.MagicHome
         {
             if (magicHomeDevice.On)
             {
-                _launchpadManager.SetButtonColor(clickableButton, Color.Green);
+                _novationController.LaunchpadManager.SetButtonColor(clickableButton, Color.Green);
             }
             else
             {
-                _launchpadManager.SetButtonColor(clickableButton, Color.Red);
+                _novationController.LaunchpadManager.SetButtonColor(clickableButton, Color.Red);
             }
         }
 

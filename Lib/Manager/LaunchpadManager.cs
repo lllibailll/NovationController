@@ -1,20 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using Core.Launchpad.Button;
 using Core.Launchpad.Impl.Mk2;
 using Lib.Click;
-using Lib.Integration;
-using Lib.Integration.Application;
-using Lib.Integration.Discord;
-using Lib.Integration.MagicHome;
-using Lib.Integration.Media;
-using Lib.Integration.NovationController;
-using Lib.Integration.PhilipsHue;
-using Lib.Integration.Steam;
-using Newtonsoft.Json;
 
 namespace Lib.Manager
 {
@@ -24,93 +12,53 @@ namespace Lib.Manager
 
         private bool _lights = true;
 
-        private bool _isRunning = true;
-        
-        private List<LaunchpadProfile> _profiles = new List<LaunchpadProfile>();
-
-        private LaunchpadProfile _activeProfile;
-
-        private List<BaseIntegration> _integrations = new List<BaseIntegration>();
-
         public LaunchpadMk2 Launchpad { get; }
+
+        private NovationController _novationController;
         
-        public LaunchpadManager()
+        public LaunchpadManager(NovationController novationController)
         {
-            new NovationControllerIntegration(this, "NovationController", "NovationController");
-            new MediaIntegration(this, "Media", "Media");
-            new ApplicationIntegration(this, "Application", "Proc");
-            new WebIntegration(this, "Web", "Web");
-            new SteamIntegration(this, "Steam", "Steam");
-            new DiscordIntegration(this, "Discord", "Discord");
-            new PhilipsHueIntegration(this, "PhilipsHue", "PhilipsHue");
-            new MagicHomeIntegration(this, "MagicHome", "MagicHome");
-
+            _novationController = novationController;
             Launchpad = LaunchpadMk2.GetInstance().Result;
-
             Launchpad.Clear();
+        }
 
+        public void RegisterButtonListener()
+        {
             Launchpad.OnButtonStateChanged += button =>
             {
-                if (_activeProfile == null) return;
+                if (_novationController.ProfileManager.ActiveProfile == null) return;
 
                 if (button.State == LaunchpadButtonState.Pressed)
                 {
                     if (button.X == 8)
                     {
-                        // Profile changing buttons
-                        var profileCandidate = _profiles.FirstOrDefault(x => x.CoordY == button.Y);
-
-                        if (profileCandidate != null)
-                        {
-                            SetProfileActive(profileCandidate);
-                        }
+                        _novationController.ProfileManager.HandleSelection(button.X, button.Y);
                     }
                     else
                     {
-                        Console.WriteLine($"Button @ {button.X},{button.Y} of profile {_activeProfile.Name} clicked!");
-                        var clickableButton = _activeProfile.Buttons.FirstOrDefault(x => x.X == button.X && x.Y == button.Y);
-                        clickableButton?.ClickCallbacks.ForEach(x => x.Invoke());
+                        _novationController.ProfileManager.HandleClick(button);
                     }
                 }
             };
-
-            LoadProfiles();
-        }
-
-        private void LoadProfiles()
-        {
-            var json = File.ReadAllText("profiles.json");
-
-            var profiles = JsonConvert.DeserializeObject<List<LaunchpadProfile>>(json);
-
-            profiles.ForEach(p =>
-            {
-                p.Buttons.ForEach(RegisterButtonActions);
-
-                AddProfile(p);
-            });
         }
 
         public void Shutdown()
         {
             Launchpad.Clear();
-            
-            _integrations.ForEach(x => x.OnStop());
-            
-            Environment.Exit(0);
         }
 
         public void ToggleLights()
         {
             if (_lights)
             {
-                _activeProfile.Buttons.ForEach(x => SetButtonColor(x, Color.Empty));
-                SetProfileButtonLight(Color.Empty);
+                _novationController.ProfileManager.ActiveProfile.Buttons.ForEach(x => SetButtonColor(x, Color.Empty));
+                _novationController.ProfileManager.SetProfileButtonLight(Color.Empty);
             }
             else
             {
-                _activeProfile.Buttons.ForEach(x => SetButtonColor(x, x.Color));
-                SetProfileButtonLight(Color.Aqua);
+                _novationController.ProfileManager.ActiveProfile.Buttons.ForEach(x => SetButtonColor(x, x.Color));
+                _novationController.ProfileManager.SetProfileButtonLight(Color.Aqua);
             }
 
             _lights = !_lights;
@@ -120,28 +68,12 @@ namespace Lib.Manager
         {
             Launchpad.SetGridButtonColor(clickableButton.X, clickableButton.Y, color);
         }
-
-        private void AddProfile(LaunchpadProfile launchpadProfile)
-        {
-            if (GetByCoords(launchpadProfile.CoordX, launchpadProfile.CoordY) != null)
-            {
-                Console.WriteLine("A profile already is in that coords.");
-                return;
-            }
-
-            _profiles.Add(launchpadProfile);
-
-            if (_activeProfile == null)
-            {
-                SetProfileActive(launchpadProfile);
-            }
-        }
-
-        private void RegisterButtonActions(ClickableButton clickableButton)
+        
+        public void RegisterButtonActions(ClickableButton clickableButton)
         {
             if (clickableButton.LoadRaws.Count > 0)
             {
-                _integrations.ForEach(x =>
+                _novationController.IntegrationManager.Integrations.ForEach(x =>
                 {
                     x.CheckLoadAction(clickableButton);
                 });
@@ -149,39 +81,11 @@ namespace Lib.Manager
             
             if (clickableButton.ClickRaws.Count > 0)
             {
-                _integrations.ForEach(x =>
+                _novationController.IntegrationManager.Integrations.ForEach(x =>
                 {
                     x.CheckClickAction(clickableButton);
                 });
             }
-        }
-
-        private LaunchpadProfile GetByCoords(int coordX, int coordY)
-        {
-            return _profiles.FirstOrDefault(x => x.CoordX == coordX && x.CoordY == coordY);
-        }
-
-        private void SetProfileActive(LaunchpadProfile launchpadProfile)
-        {
-            Launchpad.Clear();
-            launchpadProfile.Buttons.ForEach(x =>
-            {
-                Launchpad.SetGridButtonColor(x.X, x.Y, x.Color);
-
-                x.LoadCallbacks.ForEach(y => y.Invoke());
-            });
-            _activeProfile = launchpadProfile;
-            SetProfileButtonLight(Color.Aqua);
-        }
-
-        private void SetProfileButtonLight(Color color)
-        {
-            Launchpad.SetGridButtonColor(_activeProfile.CoordX, _activeProfile.CoordY, color);
-        }
-
-        public void RegisterIntegration(BaseIntegration integration)
-        {
-            _integrations.Add(integration);
         }
     }
 }

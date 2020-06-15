@@ -15,7 +15,7 @@ namespace Lib.Integration.Media
         [DllImport("user32.dll")]
         private static extern void keybd_event(byte virtualKey, byte scanCode, uint flags, IntPtr extraInfo);
 
-        public MediaIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        public MediaIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
             
         }

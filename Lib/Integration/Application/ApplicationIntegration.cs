@@ -6,7 +6,7 @@ namespace Lib.Integration.Application
 {
     public class ApplicationIntegration : BaseIntegration
     {
-        public ApplicationIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        public ApplicationIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
             
         }

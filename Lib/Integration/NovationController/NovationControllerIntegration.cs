@@ -5,7 +5,7 @@ namespace Lib.Integration.NovationController
 {
     public class NovationControllerIntegration : BaseIntegration
     {
-        public NovationControllerIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        public NovationControllerIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
         }
 
@@ -22,13 +22,13 @@ namespace Lib.Integration.NovationController
                 {
                     case "Exit":
                     {
-                        _launchpadManager.Shutdown();
+                        _novationController.LaunchpadManager.Shutdown();
                         break;
                     }
 
                     case "ToggleLights":
                     {
-                        _launchpadManager.ToggleLights();
+                        _novationController.LaunchpadManager.ToggleLights();
                         break;   
                     }
                 }

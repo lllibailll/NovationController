@@ -6,9 +6,8 @@ namespace Lib.Integration.Steam
 {
     public class SteamIntegration: BaseIntegration
     {
-        public SteamIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        public SteamIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
-            
         }
 
         protected override void LoadConfig()

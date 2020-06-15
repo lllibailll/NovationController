@@ -18,7 +18,7 @@ namespace Lib.Integration.PhilipsHue
         
         private Dictionary<int, SmartItem> _items = new Dictionary<int, SmartItem>();
 
-        public PhilipsHueIntegration(LaunchpadManager launchpadManager, string name, string actionPrefix) : base(launchpadManager, name, actionPrefix)
+        public PhilipsHueIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
             
         }
@@ -61,11 +61,11 @@ namespace Lib.Integration.PhilipsHue
         {
             if (smartItem.State.On)
             {
-                _launchpadManager.SetButtonColor(clickableButton, Color.Green);
+                _novationController.LaunchpadManager.SetButtonColor(clickableButton, Color.Green);
             }
             else
             {
-                _launchpadManager.SetButtonColor(clickableButton, Color.Red);
+                _novationController.LaunchpadManager.SetButtonColor(clickableButton, Color.Red);
             }
         }
 

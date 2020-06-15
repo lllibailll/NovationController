@@ -2,7 +2,7 @@
 using Lib.Click;
 using Newtonsoft.Json;
 
-namespace Lib
+namespace Lib.Profile
 {
     public class LaunchpadProfile
     {

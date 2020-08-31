@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{733E8C45-683D-45DB-B204-F2F10177B4D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovationController.Lib", "NovationController.Lib\NovationController.Lib.csproj", "{733E8C45-683D-45DB-B204-F2F10177B4D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{CE1C1A87-C41B-494F-BD0B-206815B1A1E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovationController.Core", "NovationController.Core\NovationController.Core.csproj", "{CE1C1A87-C41B-494F-BD0B-206815B1A1E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{9C0DD0F8-BDDA-42E3-A2CE-138686CAA486}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NovationController.ConsoleApp", "NovationController.ConsoleApp\NovationController.ConsoleApp.csproj", "{9C0DD0F8-BDDA-42E3-A2CE-138686CAA486}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <AssemblyName>NovationController.Core</AssemblyName>
+        <RootNamespace>NovationController.Core</RootNamespace>
+        <Company>lllibailll</Company>
+        <Product>NovationController.Core</Product>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="managed-midi" Version="1.9.14" />
+      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    </ItemGroup>
+
+</Project>

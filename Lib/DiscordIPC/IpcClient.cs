@@ -17,6 +17,7 @@ public sealed class IpcClient : IDisposable
 
         private RestClient _restClient = new RestClient("https://discord.com/api");
         private DiscordConfig _discordConfig;
+        private DiscordAuthConfig _discordAuthConfig;
 
         private IpcSocket _ipc;
         private Thread _readThread;
@@ -199,6 +200,7 @@ public sealed class IpcClient : IDisposable
 
         public void Authenticate(DiscordAuthConfig discordAuthConfig)
         {
+            _discordAuthConfig = discordAuthConfig;
             var jObject = new JObject
             {
                 {"cmd", "AUTHENTICATE"},
@@ -226,6 +228,24 @@ public sealed class IpcClient : IDisposable
             var authConfig = JsonConvert.DeserializeObject<DiscordAuthConfig>(res.Content);
             
             OnAuthorize(this, new AuthorizeEvent(authConfig));
+            
+            Authenticate(authConfig);
+        }
+
+        public void OAuthRefresh(string refreshToken)
+        {
+            var req = new RestRequest("/oauth2/token", Method.POST);
+
+            req.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            req.AddParameter("client_id", _discordConfig.ApplicationId);
+            req.AddParameter("client_secret", _discordConfig.Secret);
+            req.AddParameter("grant_type", "refresh_token");
+            req.AddParameter("refresh_token", refreshToken);
+
+            var res = _restClient.Post(req);
+
+            var authConfig = JsonConvert.DeserializeObject<DiscordAuthConfig>(res.Content);
             
             Authenticate(authConfig);
         }
@@ -315,7 +335,14 @@ public sealed class IpcClient : IDisposable
             switch (evt)
             {
                 case "ERROR":
-                    OnError?.Invoke(this, new IpcErrorEventArgs((int) data["code"], (string) data["message"]));
+                    if (int.Parse(data["code"].ToString()) == 4009)
+                    {
+                        OAuthRefresh(_discordAuthConfig.RefreshToken);
+                    }
+                    else
+                    {
+                        OnError?.Invoke(this, new IpcErrorEventArgs((int) data["code"], (string) data["message"]));
+                    }
                     break;
 
                 case "VOICE_SETTINGS_UPDATE":

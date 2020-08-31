@@ -67,7 +67,7 @@ namespace Lib.Integration
             Log.Debug($"Creating config for {Name}");
             var file = File.Create($"Config/Integration/{Name}/config.json");
 
-            var raw = JsonConvert.SerializeObject(config);
+            var raw = JsonConvert.SerializeObject(config, Formatting.Indented);
 
             var writerStream = new StreamWriter(file);
             writerStream.Write(raw);

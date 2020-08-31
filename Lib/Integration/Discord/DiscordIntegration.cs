@@ -39,7 +39,7 @@ namespace Lib.Integration.Discord
             {
                 _authConfig = args.DiscordAuthConfig;
                 
-                WriteToFile(JsonConvert.SerializeObject(_authConfig), "auth_details.json");
+                WriteToFile(JsonConvert.SerializeObject(_authConfig, Formatting.Indented), "auth_details.json");
             };
 
             _ipcClient.OnError += (sender, args) =>

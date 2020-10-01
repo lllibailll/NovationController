@@ -4,7 +4,7 @@ namespace NovationController.Lib.Integration.NovationController
 {
     public class NovationControllerIntegration : BaseIntegration
     {
-        public NovationControllerIntegration(global::NovationController.Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
+        public NovationControllerIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
         }
 

@@ -5,7 +5,7 @@ namespace NovationController.Lib.Integration.Application
 {
     public class WebIntegration : BaseIntegration
     {
-        public WebIntegration(global::NovationController.Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
+        public WebIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
             
         }

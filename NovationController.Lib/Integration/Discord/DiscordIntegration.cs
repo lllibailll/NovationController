@@ -13,7 +13,7 @@ namespace NovationController.Lib.Integration.Discord
 
         private DiscordVoiceStatus _discordVoiceStatus = new DiscordVoiceStatus();
 
-        public DiscordIntegration(global::NovationController.Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
+        public DiscordIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
         }
 

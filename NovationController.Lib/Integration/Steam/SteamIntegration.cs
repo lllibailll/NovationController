@@ -5,7 +5,7 @@ namespace NovationController.Lib.Integration.Steam
 {
     public class SteamIntegration: BaseIntegration
     {
-        public SteamIntegration(global::NovationController.Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
+        public SteamIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
         }
 

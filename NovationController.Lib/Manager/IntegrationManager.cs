@@ -15,11 +15,11 @@ namespace NovationController.Lib.Manager
     public class IntegrationManager
     {
         private readonly ILog Log = LogManager.GetLogger("nc", "integration-manager");
-        private global::NovationController.Lib.NovationController _novationController;
+        private NovationController _novationController;
 
         public List<BaseIntegration> Integrations { get; } = new List<BaseIntegration>();
 
-        public IntegrationManager(global::NovationController.Lib.NovationController novationController)
+        public IntegrationManager(NovationController novationController)
         {
             _novationController = novationController;
         }

@@ -26,7 +26,7 @@ namespace NovationController.Lib.Integration.MagicHome
 
         private List<MagicHomeDevice> _devices = new List<MagicHomeDevice>();
 
-        public MagicHomeIntegration(global::NovationController.Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
+        public MagicHomeIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
         }
 

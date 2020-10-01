@@ -21,7 +21,7 @@ namespace NovationController.Lib.Integration.PhilipsHue
         private string BaseEndpoint => $"{_config.PhilipsUrl}/{_config.PhilipsToken}";
         private string LightsEndpoint => $"{BaseEndpoint}/lights";
 
-        public PhilipsHueIntegration(global::NovationController.Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
+        public PhilipsHueIntegration(Lib.NovationController novationController, string name, string actionPrefix) : base(novationController, name, actionPrefix)
         {
         }
 

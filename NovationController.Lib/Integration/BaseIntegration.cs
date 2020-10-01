@@ -10,13 +10,13 @@ namespace NovationController.Lib.Integration
     public abstract class BaseIntegration
     {
         protected ILog Log;
-        protected global::NovationController.Lib.NovationController _novationController;
+        protected Lib.NovationController _novationController;
         public string Name { get; }
         private string _actionPrefix;
 
         private string IntegrationPath;
 
-        public BaseIntegration(global::NovationController.Lib.NovationController novationController, string name, string actionPrefix)
+        public BaseIntegration(Lib.NovationController novationController, string name, string actionPrefix)
         {
             Log = LogManager.GetLogger("nc", $"{name.ToLower()}-integration");
             Log.Info("Loading...");

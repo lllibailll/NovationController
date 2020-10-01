@@ -15,9 +15,9 @@ namespace NovationController.Lib.Manager
 
         public LaunchpadMk2 Launchpad { get; }
 
-        private global::NovationController.Lib.NovationController _novationController;
+        private NovationController _novationController;
         
-        public LaunchpadManager(global::NovationController.Lib.NovationController novationController)
+        public LaunchpadManager(NovationController novationController)
         {
             _novationController = novationController;
             Launchpad = LaunchpadMk2.GetInstance().Result;

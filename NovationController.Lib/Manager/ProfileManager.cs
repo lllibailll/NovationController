@@ -14,13 +14,13 @@ namespace NovationController.Lib.Manager
     {
         private readonly ILog Log = LogManager.GetLogger("nc", "profile-manager");
         
-        private global::NovationController.Lib.NovationController _novationController;
+        private NovationController _novationController;
         
         private List<LaunchpadProfile> _profiles = new List<LaunchpadProfile>();
         
         public LaunchpadProfile ActiveProfile { get; private set; }
 
-        public ProfileManager(global::NovationController.Lib.NovationController novationController)
+        public ProfileManager(NovationController novationController)
         {
             _novationController = novationController;
         }

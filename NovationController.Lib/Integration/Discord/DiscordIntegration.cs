@@ -57,7 +57,7 @@ namespace NovationController.Lib.Integration.Discord
             };
         }
 
-        protected override void LoadConfig()
+        public override void LoadConfig()
         {
             var configRaw = GetRawConfig() ?? CreateConfig(new DiscordConfig());
             _config = JsonConvert.DeserializeObject<DiscordConfig>(configRaw);

@@ -15,6 +15,8 @@ namespace NovationController.Lib.Integration
         private string _actionPrefix;
 
         private string IntegrationPath;
+        
+        public bool Enabled { get; set; } = false;
 
         public BaseIntegration(Lib.NovationController novationController, string name, string actionPrefix)
         {
@@ -26,9 +28,6 @@ namespace NovationController.Lib.Integration
             _novationController.IntegrationManager.RegisterIntegration(this);
             
             IntegrationPath = $"Config/Integration/{Name}";
-            LoadConfig();
-            
-            OnLoad();
         }
         
         public void CheckLoadAction(ClickableButton clickableButton)
@@ -113,7 +112,7 @@ namespace NovationController.Lib.Integration
         protected abstract void SetupLoadAction(ClickableButton clickableButton, string[] data);
         protected abstract void SetupClickAction(ClickableButton clickableButton, string[] data);
         protected abstract void SetupColorControllerAction(ClickableButton clickableButton, string[] data);
-        protected abstract void LoadConfig();
+        public abstract void LoadConfig();
 
         private static string[] GetData(string data)
         {

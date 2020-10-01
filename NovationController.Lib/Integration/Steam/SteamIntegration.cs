@@ -9,7 +9,7 @@ namespace NovationController.Lib.Integration.Steam
         {
         }
 
-        protected override void LoadConfig()
+        public override void LoadConfig()
         {
             
         }

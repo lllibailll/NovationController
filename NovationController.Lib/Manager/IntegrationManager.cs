@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using log4net;
+using Newtonsoft.Json;
 using NovationController.Lib.Integration;
 using NovationController.Lib.Integration.Application;
 using NovationController.Lib.Integration.Discord;
@@ -18,7 +20,9 @@ namespace NovationController.Lib.Manager
         private NovationController _novationController;
 
         public List<BaseIntegration> Integrations { get; } = new List<BaseIntegration>();
-
+        
+        private string _integrationsConfigPath = "Config/Integration/integrations.json";
+        
         public IntegrationManager(NovationController novationController)
         {
             _novationController = novationController;
@@ -35,6 +39,43 @@ namespace NovationController.Lib.Manager
             new DiscordIntegration(_novationController, "Discord", "Discord");
             new PhilipsHueIntegration(_novationController, "PhilipsHue", "PhilipsHue");
             new MagicHomeIntegration(_novationController, "MagicHome", "MagicHome");
+
+            if (!File.Exists(_integrationsConfigPath))
+            {
+                var defaultConfigs = new List<GenericIntegrationConfig>();
+                
+                Integrations.ForEach(x => 
+                    defaultConfigs.Add(new GenericIntegrationConfig
+                    {
+                        Name = x.Name,
+                        Enabled = false
+                    })
+                );
+                
+                var raw = JsonConvert.SerializeObject(defaultConfigs, Formatting.Indented);
+
+                var file = File.Create(_integrationsConfigPath);
+                
+                var writerStream = new StreamWriter(file);
+                writerStream.Write(raw);
+
+                writerStream.Close();
+                file.Close();
+            }
+
+            var integrationsConfigs = JsonConvert.DeserializeObject<List<GenericIntegrationConfig>>(File.ReadAllText(_integrationsConfigPath));
+            
+            Integrations.ForEach(x =>
+            {
+                var integrationConfig = integrationsConfigs.FirstOrDefault(y => y.Name.Equals(x.Name));
+
+                if (integrationConfig != null && integrationConfig.Enabled)
+                {
+                    x.Enabled = true;
+                    x.LoadConfig();
+                    x.OnLoad();
+                }
+            });
         }
 
         public void RegisterIntegration(BaseIntegration integration)

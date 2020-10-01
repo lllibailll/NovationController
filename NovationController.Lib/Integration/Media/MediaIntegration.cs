@@ -19,7 +19,7 @@ namespace NovationController.Lib.Integration.Media
             
         }
         
-        protected override void LoadConfig()
+        public override void LoadConfig()
         {
             
         }

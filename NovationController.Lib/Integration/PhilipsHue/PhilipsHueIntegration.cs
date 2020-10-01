@@ -32,7 +32,7 @@ namespace NovationController.Lib.Integration.PhilipsHue
             LoadItems();
         }
 
-        protected override void LoadConfig()
+        public override void LoadConfig()
         {
             var configRaw = GetRawConfig() ?? CreateConfig(new PhilipsHueConfig());
             _config = JsonConvert.DeserializeObject<PhilipsHueConfig>(configRaw);

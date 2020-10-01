@@ -39,7 +39,7 @@ namespace NovationController.Lib.Integration.MagicHome
             LoadDevices();
         }
         
-        protected override void LoadConfig()
+        public override void LoadConfig()
         {
             var configRaw = GetRawConfig() ?? CreateConfig(new MagicHomeConfig());
             _config = JsonConvert.DeserializeObject<MagicHomeConfig>(configRaw);

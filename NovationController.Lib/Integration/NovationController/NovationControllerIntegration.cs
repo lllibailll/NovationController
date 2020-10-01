@@ -34,7 +34,7 @@ namespace NovationController.Lib.Integration.NovationController
             });
         }
 
-        protected override void LoadConfig()
+        public override void LoadConfig()
         {
             
         }

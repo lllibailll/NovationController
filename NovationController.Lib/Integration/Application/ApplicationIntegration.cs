@@ -10,7 +10,7 @@ namespace NovationController.Lib.Integration.Application
             
         }
         
-        protected override void LoadConfig()
+        public override void LoadConfig()
         {
             
         }
